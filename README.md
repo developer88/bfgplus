@@ -1,6 +1,8 @@
 bfg--
 =====
 
+### [ Working in progress ]
+
 BFG + means Blog For Google +
 
 ![Doom BFG weapon](http://games.compulenta.ru/upload/iblock/ae7/bfg.jpg)
