@@ -6,6 +6,7 @@
     <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
   </head>
   <body>
+    <div id='bfg_sample'></div>
     <!-- Javascript staff -->
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script src="js/bootstrap.min.js"></script>
@@ -13,8 +14,9 @@
     <!-- Javascript BFG core -->
     <script src="js/bfg.min.js"></script>
     <script>
-      var bfg = new Bfg();
-      bfg.initialize();
+      $(document).ready(function() {
+        var bfg = new Bfg({'api_key':'23423423','userid':'102960425588359758591','domid':'bfg_sample'});
+      });
     </script>
   </body>
 </html>

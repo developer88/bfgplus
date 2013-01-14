@@ -7,33 +7,36 @@
 # from posts of your Google+ profile.
 # According to Google+ limitation BFG can only display 100 of your posts.
 
-# helper class for retrieving data from Google+
-class GooglePlus
-  constructor: (@options) ->
-
-  posts: ->
-
-  post: (id) ->
-
+class ABC
+  
 
 # main class of Blog for Google+
 class Bfg
   constructor: (@options) ->
+    @api_key = @options['api_key']
+    @userid = @options['userid']
+    @domid = @options['domid']
     option = { resGetPath: 'js/locales/__lng__.json', lng: 'en-US' }
     $.i18n.init(option, (t) ->
       appName = t("key")
     )
-    @gplus = new GooglePlus
+    load_blog
 
-  # alias for @gplus object
-  plus: ->
-    @gplus
+  
+  blog_posts: ->
+    @posts
 
   # load blog data and render it to dom_obj
-  load_blog: (dom_obj) ->
-    posts = plus.posts
+  load_blog: ->
+    $.getJSON('https://www.googleapis.com/plus/v1/people/'+@userid+'/activities/public?key='+@api_key, (data) ->
+      @posts = data['items']
+      process_posts
+    )
+
+  process_posts: ->
+    posts = blog_posts
     if posts.size > 0
-      render_posts(dom_obj, pack_post(post) for post in posts )
+      render_posts( pack_post(post) for post in posts )
     else
       message($.t('app.messages.posts.empty'))
 
@@ -41,7 +44,7 @@ class Bfg
   load_post: (id) ->
     if parseInt(id) == 0
       return message($.t('app.messages.posts.not_found'))
-    post = plus.post(id)
+    post = post for post in blog_posts when post['id'] is id
     post_html = unpack_post(post)
     render_post(post_html)
 
@@ -55,7 +58,8 @@ class Bfg
   unpack_post: (post) ->
 
   # put posts array into dom_obj
-  render_posts: (dom_obj, html) ->
+  render_posts: (html) ->
+    $(domid).html html
 
   # put post data into dom_obj
   render_post: (html) ->
