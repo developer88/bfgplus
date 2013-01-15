@@ -7,6 +7,7 @@
     function Bfg() {
       this.api_key = $("meta[name='bfg:api']").attr("content");
       this.userid = $("meta[name='bfg:user']").attr("content");
+      this.locale = $("meta[name='bfg:locale']").attr("content");
       this.prepare_container();
       this.load_blog();
     }
@@ -69,7 +70,9 @@
       return $("#bfg div.bfg-container div.bfg-body").html("<span class='bfg-message-" + type + "'>" + text + "</span>");
     };
 
-    Bfg.prototype.pack_post = function(post) {};
+    Bfg.prototype.pack_post = function(post) {
+      return this.d(post);
+    };
 
     Bfg.prototype.unpack_post = function(post) {};
 

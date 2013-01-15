@@ -7,11 +7,16 @@
 # from posts of your Google+ profile.
 # According to Google+ limitation BFG can only display 100 of your posts.
 
-# main class of Blog for Google+
+# Blog for Google+
+# This is just an atempt to create a blog using Google+ as a source of content.
+# So my vision is one should not have lots of blogs (blogspot, wordpress etc. + twitter)
+# but should have only one profile in Google+ and many (if one need to do so) websites with this script.
+# But this is just a dream.
 class Bfg
   constructor: ->
     @api_key = $("meta[name='bfg:api']").attr "content"
     @userid = $("meta[name='bfg:user']").attr "content"
+    @locale = $("meta[name='bfg:locale']").attr "content"
     # TODO: Finish with locales
     #option = { resGetPath: 'js/locales/__lng__.json', lng: 'en-US' }
     #$.i18n.init(option, (t) ->
@@ -20,13 +25,15 @@ class Bfg
     this.prepare_container()
     this.load_blog()
 
-
+  # prepares necessary tags for posts and messages
   prepare_container: ->
     $("#bfg div.bfg-container").html "<div class='bfg-message'></div><div class='bfg-body'></div>"
   
+  # returns loaded posts
   blog_posts: ->
     @posts
 
+  # processes posts received from Google+
   process_posts: ->
     posts = this.blog_posts()
     this.d posts
@@ -36,14 +43,14 @@ class Bfg
     else
       #@message $.t('app.messages.posts.empty')     
 
-  # load blog data and render it to dom_obj
+  # loads blog data and render it 
   load_blog: ->
     $.getJSON('https://www.googleapis.com/plus/v1/people/'+@userid+'/activities/public?key='+@api_key, (data) =>
       @posts = data['items']
       @process_posts()
     )
 
-  # load post data and render it to dom_obj
+  # loads post data and render it to dom_obj
   load_post: (id) ->
     if parseInt(id) == 0
       return message($.t('app.messages.posts.not_found'))
@@ -51,34 +58,48 @@ class Bfg
     post_html = unpack_post(post)
     render_post(post_html)
 
-  # display message with type and text
+  # displays message with type and text
   message: (text, type = 'info') ->
     $("#bfg div.bfg-container div.bfg-body").html("<span class='bfg-message-"+type+"'>"+text+"</span>")
 
-  # create a plate with short info of particular post from post variable
+  # creates a plate with short info of particular post from post variable
   pack_post: (post) ->
+    @d post
+    #title
+    #url
+    #id
+    #annotation
+    #object.content
+    #attachments[]
+    #  url
+    #  objectType
+    #  id
+    #  article ->
+    #   content
+    #   url
+    #  image ->
+    #   image
+    #     url
 
-  # create a modal window with post data from post variable
+
+  # creates a modal window with post data from post variable
   unpack_post: (post) ->
 
-  # put posts array into dom_obj
+  # puts posts array into dom_obj
   render_posts: (html) ->
     $("#bfg div.bfg-container div.bfg-body").html html
+    # TODO bind events for posts
 
-  # put post data into dom_obj
+  # puts post data into dom_obj
   render_post: (html) ->
+    # kill all opened modal forms
+    # open a new one
+    # bind necessary events
 
+  # writes object data into Chrome console
+  # this is for Chrome only, others browsers - fuck you!
   d: (obj) ->
     console.log obj
 
-
+# Let's roll!
 bfg = new Bfg
-
-
-
-
-
-
-
-
-
