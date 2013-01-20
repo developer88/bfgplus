@@ -8,6 +8,7 @@
       this.api_key = $("meta[name='bfg:api']").attr("content");
       this.userid = $("meta[name='bfg:user']").attr("content");
       this.locale = $("meta[name='bfg:locale']").attr("content");
+      this.annotation_length = 35;
       this.prepare_container();
       this.load_blog();
     }
@@ -49,18 +50,19 @@
     };
 
     Bfg.prototype.load_post = function(id) {
-      var post, post_html, _i, _len;
+      var post, post_html, _i, _len, _ref;
       if (parseInt(id) === 0) {
         return message($.t('app.messages.posts.not_found'));
       }
-      for (_i = 0, _len = blog_posts.length; _i < _len; _i++) {
-        post = blog_posts[_i];
+      _ref = this.blog_posts;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        post = _ref[_i];
         if (post['id'] === id) {
           post = post;
         }
       }
-      post_html = unpack_post(post);
-      return render_post(post_html);
+      post_html = this.unpack_post(post);
+      return this.render_post(post_html);
     };
 
     Bfg.prototype.message = function(text, type) {
@@ -70,14 +72,41 @@
       return $("#bfg div.bfg-container div.bfg-body").html("<span class='bfg-message-" + type + "'>" + text + "</span>");
     };
 
+    Bfg.prototype.post_preview = function(post) {};
+
+    Bfg.prototype.post_annotation = function(post) {
+      var arr, chunk, ret, _i, _len;
+      if (!post['title'] || post['title'].length === 0 || post['title'].length < this.annotation_length) {
+        return "";
+      }
+      arr = post['title'].split(/\s/);
+      ret = "";
+      for (_i = 0, _len = arr.length; _i < _len; _i++) {
+        chunk = arr[_i];
+        if (ret.length < this.annotation_length) {
+          ret += (ret.length === 0 ? '' : ' ') + chunk;
+        }
+      }
+      return ret;
+    };
+
     Bfg.prototype.pack_post = function(post) {
-      return this.d(post);
+      var html;
+      html = "<div id='bfg-post-" + post['id'] + "' class='bfg-post' data-id='" + post['id'] + "' data-image='" + this.post_preview(post) + "'>";
+      html += "<span class='bfg-post-header'>" + this.post_annotation(post) + "</span>";
+      html += "</div>";
+      return html;
     };
 
     Bfg.prototype.unpack_post = function(post) {};
 
     Bfg.prototype.render_posts = function(html) {
-      return $("#bfg div.bfg-container div.bfg-body").html(html);
+      var self;
+      self = this;
+      $("#bfg div.bfg-container div.bfg-body").html(html);
+      return $(".bfg-post").click(function() {
+        return self.load_post($(this).data('id'));
+      });
     };
 
     Bfg.prototype.render_post = function(html) {};

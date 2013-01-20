@@ -5,7 +5,7 @@
 # 
 # The library provides an easy way to create a lightweight blog 
 # from posts of your Google+ profile.
-# According to Google+ limitation BFG can only display 100 of your posts.
+# According to Google+ limitation BFG can only display 100 of your posts maximum.
 
 # Blog for Google+
 # This is just an atempt to create a blog using Google+ as a source of content.
@@ -17,6 +17,7 @@ class Bfg
     @api_key = $("meta[name='bfg:api']").attr "content"
     @userid = $("meta[name='bfg:user']").attr "content"
     @locale = $("meta[name='bfg:locale']").attr "content"
+    @annotation_length = 35;
     # TODO: Finish with locales
     #option = { resGetPath: 'js/locales/__lng__.json', lng: 'en-US' }
     #$.i18n.init(option, (t) ->
@@ -54,17 +55,34 @@ class Bfg
   load_post: (id) ->
     if parseInt(id) == 0
       return message($.t('app.messages.posts.not_found'))
-    post = post for post in blog_posts when post['id'] is id
-    post_html = unpack_post(post)
-    render_post(post_html)
+    post = post for post in this.blog_posts when post['id'] is id
+    post_html = this.unpack_post(post)
+    this.render_post(post_html)
 
   # displays message with type and text
   message: (text, type = 'info') ->
     $("#bfg div.bfg-container div.bfg-body").html("<span class='bfg-message-"+type+"'>"+text+"</span>")
 
+  # returns preview imag url for post
+  post_preview: (post) ->
+
+  # return annotation for post
+  post_annotation: (post) ->
+    # TODO refactor this
+    return "" if !post['title'] || post['title'].length == 0 || post['title'].length < @annotation_length
+    arr = post['title'].split(/\s/);
+    ret = ""
+    (ret += (if ret.length == 0 then '' else ' ') + chunk ) for chunk in arr when ret.length < @annotation_length
+    return ret
+
   # creates a plate with short info of particular post from post variable
   pack_post: (post) ->
-    @d post
+    html  = "<div id='bfg-post-"+post['id']+"' class='bfg-post' data-id='"+post['id']+"' data-image='"+this.post_preview(post)+"'>"
+    html += "<span class='bfg-post-header'>"+this.post_annotation(post)+"</span>"
+    html += "</div>"
+    return html
+
+    #@d post
     #title
     #url
     #id
@@ -87,11 +105,14 @@ class Bfg
 
   # puts posts array into dom_obj
   render_posts: (html) ->
+    self = this
     $("#bfg div.bfg-container div.bfg-body").html html
-    # TODO bind events for posts
+    $(".bfg-post").click ->
+      self.load_post $(this).data('id')
 
   # puts post data into dom_obj
   render_post: (html) ->
+    #alert 'dsfsdfs'
     # kill all opened modal forms
     # open a new one
     # bind necessary events
