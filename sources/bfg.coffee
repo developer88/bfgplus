@@ -52,6 +52,7 @@ class Bfg
     )
 
   # loads post data and render it to dom_obj
+  # deprecated
   load_post: (id) ->
     if parseInt(id) == 0
       return message($.t('app.messages.posts.not_found'))
@@ -65,6 +66,7 @@ class Bfg
 
   # returns preview imag url for post
   post_preview: (post) ->
+    ""
 
   # return annotation for post
   post_annotation: (post) ->
@@ -73,12 +75,32 @@ class Bfg
     arr = post['title'].split(/\s/);
     ret = ""
     (ret += (if ret.length == 0 then '' else ' ') + chunk ) for chunk in arr when ret.length < @annotation_length
-    return ret
+    return ret + '...'
+
+  post_content: (post) ->
+    ""
+
+  
+  # returns html data for post modal
+  post_body: (post) ->
+    html  = "<div id='bfg-post-"+post['id']+"-modal' class='modal hide fade' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>"
+    html += "<div class='modal-header'>"
+    # close button
+    html += "<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>x</button>"
+    # post title
+    html += "<h3 id='myModalLabel'>"+this.post_annotation(post)+"</h3>"
+    html += "</div>"
+    # post body
+    html += "<div class='modal-body'>"+this.post_content(post)+"</div>"
+    html += "<div class='modal-footer'>"
+    html += "<button class='btn' data-dismiss='modal' aria-hidden='true'>Close</button>"
+    html += "</div></div>" 
 
   # creates a plate with short info of particular post from post variable
   pack_post: (post) ->
     html  = "<div id='bfg-post-"+post['id']+"' class='bfg-post' data-id='"+post['id']+"' data-image='"+this.post_preview(post)+"'>"
     html += "<span class='bfg-post-header'>"+this.post_annotation(post)+"</span>"
+    html += "<div class='bfg-post-body'>"+this.post_body(post)+"</div>"
     html += "</div>"
     return html
 
@@ -101,17 +123,31 @@ class Bfg
 
 
   # creates a modal window with post data from post variable
+  # deprecated
   unpack_post: (post) ->
+    #html  = "<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    #        <div class="modal-header">
+    #          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    #          <h3 id="myModalLabel">Modal header</h3>
+    #        </div>
+    #        <div class="modal-body">
+    #          <p>One fine body…</p>
+    #        </div>
+    #        <div class="modal-footer">
+    #          <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    #          <button class="btn btn-primary">Save changes</button>
+    #        </div>
+    #      </div>"
 
   # puts posts array into dom_obj
   render_posts: (html) ->
-    self = this
     $("#bfg div.bfg-container div.bfg-body").html html
     $(".bfg-post").click ->
-      self.load_post $(this).data('id')
+      $('#bfg-post-'+$(this).data('id')+'-modal').modal {show:true}
 
   # puts post data into dom_obj
   render_post: (html) ->
+
     #alert 'dsfsdfs'
     # kill all opened modal forms
     # open a new one

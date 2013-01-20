@@ -72,7 +72,9 @@
       return $("#bfg div.bfg-container div.bfg-body").html("<span class='bfg-message-" + type + "'>" + text + "</span>");
     };
 
-    Bfg.prototype.post_preview = function(post) {};
+    Bfg.prototype.post_preview = function(post) {
+      return "";
+    };
 
     Bfg.prototype.post_annotation = function(post) {
       var arr, chunk, ret, _i, _len;
@@ -87,13 +89,31 @@
           ret += (ret.length === 0 ? '' : ' ') + chunk;
         }
       }
-      return ret;
+      return ret + '...';
+    };
+
+    Bfg.prototype.post_content = function(post) {
+      return "";
+    };
+
+    Bfg.prototype.post_body = function(post) {
+      var html;
+      html = "<div id='bfg-post-" + post['id'] + "-modal' class='modal hide fade' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>";
+      html += "<div class='modal-header'>";
+      html += "<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>x</button>";
+      html += "<h3 id='myModalLabel'>" + this.post_annotation(post) + "</h3>";
+      html += "</div>";
+      html += "<div class='modal-body'>" + this.post_content(post) + "</div>";
+      html += "<div class='modal-footer'>";
+      html += "<button class='btn' data-dismiss='modal' aria-hidden='true'>Close</button>";
+      return html += "</div></div>";
     };
 
     Bfg.prototype.pack_post = function(post) {
       var html;
       html = "<div id='bfg-post-" + post['id'] + "' class='bfg-post' data-id='" + post['id'] + "' data-image='" + this.post_preview(post) + "'>";
       html += "<span class='bfg-post-header'>" + this.post_annotation(post) + "</span>";
+      html += "<div class='bfg-post-body'>" + this.post_body(post) + "</div>";
       html += "</div>";
       return html;
     };
@@ -101,11 +121,11 @@
     Bfg.prototype.unpack_post = function(post) {};
 
     Bfg.prototype.render_posts = function(html) {
-      var self;
-      self = this;
       $("#bfg div.bfg-container div.bfg-body").html(html);
       return $(".bfg-post").click(function() {
-        return self.load_post($(this).data('id'));
+        return $('#bfg-post-' + $(this).data('id') + '-modal').modal({
+          show: true
+        });
       });
     };
 
