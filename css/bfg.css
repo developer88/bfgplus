@@ -1,11 +1,18 @@
 /* BFG+ main styles */
 
 div#bfg {
-  width: 80%;
+  /*width: 80%;*/
 }
 
 .bfg-body{
   display: inline;
+  margin: 0 auto;
+}
+
+.bfg-progress-bar{
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 
@@ -21,7 +28,7 @@ div#bfg {
 }
 
 .bfg-post-body {
-  display: none;
+  /*display: none;*/
 }
 
 .bfg-post-header {

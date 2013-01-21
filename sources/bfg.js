@@ -5,14 +5,53 @@
   Bfg = (function() {
 
     function Bfg() {
-      this.api_key = $("meta[name='bfg:api']").attr("content");
-      this.userid = $("meta[name='bfg:user']").attr("content");
-      this.locale = $("meta[name='bfg:locale']").attr("content");
-      this.count = $("meta[name='bfg:count']").attr("content");
+      var option;
+      this.api_key = this.s('api') ? this.s('api') : null;
+      this.userid = this.s('user') ? this.s('user') : null;
+      this.locale = this.s('locale') ? this.s('locale') : 'en-US';
+      this.count = this.s('count') ? this.s('count') : 100;
       this.annotation_length = 35;
+      this.loaded = false;
+      if (!this.api_key || !this.userid) {
+        this.d('Cannot load BFG+ because of wrong initial params');
+        return false;
+      }
       this.prepare_container();
+      this.show_progress_bar();
+      option = {
+        resGetPath: 'js/locales/__lng__.json',
+        lng: this.locale,
+        debug: true
+      };
+      $.i18n.init(option, function(t) {
+        var appName;
+        return appName = t("key");
+      });
+      this.loaded = true;
       this.load_blog();
     }
+
+    Bfg.prototype.show_progress_bar = function() {
+      var html;
+      html = "<div class='progress progress-striped active bfg-progress-bar'>";
+      html += "<div class='bar' id='bfg-progress-bar' style='width: 10%;'></div>";
+      html += "</div>";
+      return $("#bfg div.bfg-container div.bfg-body").html(html);
+    };
+
+    Bfg.prototype.set_progress_bar = function(value) {
+      if (value < 0 || value > 100) {
+        value = 10;
+      }
+      return $('#bfg-progress-bar').css('width', value + '%');
+    };
+
+    Bfg.prototype.s = function(name) {
+      if (!name) {
+        return null;
+      }
+      return $("meta[name='bfg:" + name + "']").attr("content");
+    };
 
     Bfg.prototype.prepare_container = function() {
       return $("#bfg div.bfg-container").html("<div class='bfg-message'></div><div class='bfg-body'></div>");
@@ -46,17 +85,26 @@
 
     Bfg.prototype.load_blog = function() {
       var _this = this;
+      if (!this.loaded) {
+        return false;
+      }
       return $.getJSON('https://www.googleapis.com/plus/v1/people/' + this.userid + '/activities/public?maxResults=' + this.count + '&key=' + this.api_key, function(data) {
+        _this.set_progress_bar(40);
         _this.posts = data['items'];
         return _this.process_posts();
       });
     };
 
     Bfg.prototype.message = function(text, type) {
+      var html;
       if (type == null) {
         type = 'info';
       }
-      return $("#bfg div.bfg-container div.bfg-body").html("<span class='bfg-message-" + type + "'>" + text + "</span>");
+      html = "<div class='" + type + "'>";
+      html += "<button type='button' class='close' data-dismiss='" + type + "'>&times;</button>";
+      html += text;
+      html += "</div>";
+      return $("#bfg div.bfg-container div.bfg-message").html(html);
     };
 
     Bfg.prototype.post_preview = function(post) {
@@ -96,7 +144,7 @@
 
     Bfg.prototype.post_content = function(post) {
       if (post['object']['attachments'] && post['object']['attachments'][0]) {
-        return post['object']['content'] + "<div class='bfg-post-read-more'><a href='" + post['object']['attachments'][0]['url'] + "'>Read more</a>";
+        return post['object']['content'] + "<div class='bfg-post-read-more'><a href='" + post['object']['attachments'][0]['url'] + "'>Read more</a></div>";
       } else {
         return post['object']['content'];
       }
@@ -134,17 +182,19 @@
     Bfg.prototype.pack_post = function(post) {
       var html, preview;
       preview = this.post_preview(post);
-      html = "<div id='bfg-post-" + post['id'] + "' class='bfg-post bfg-post-background-" + this.post_type(post) + "' data-id='" + post['id'] + "' data-image='" + this.post_preview(post) + "' >";
+      html = "<div id='bfg-post-" + post['id'] + "' class='img-polaroid1 thumbnail bfg-post bfg-post-background-" + this.post_type(post) + "' data-id='" + post['id'] + "' data-image='" + this.post_preview(post) + "'>";
       html += "<span class='bfg-post-header'>" + this.post_annotation(post) + "</span>";
       html += "<div class='bfg-post-body'>" + this.post_body(post) + "</div>";
-      html += "<a href='#bfg-post-" + post['id'] + "-modal' role='button' class='btn' data-toggle='modal'>Launch demo modal</a>";
       html += "</div>";
       return html;
     };
 
     Bfg.prototype.render_posts = function(html) {
       $("#bfg div.bfg-container div.bfg-body").html(html);
-      return $(".bfg-post").click(function() {});
+      return $(".bfg-post").click(function() {
+        $('#bfg-post-' + $(this).data('id') + '-modal').modal;
+        return $('#bfg-post-' + $(this).data('id') + '-modal').modal('show');
+      });
     };
 
     Bfg.prototype.d = function(obj) {

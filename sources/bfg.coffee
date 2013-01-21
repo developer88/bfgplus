@@ -14,19 +14,43 @@
 # But this is just a dream.
 class Bfg
   constructor: ->
-    @api_key = $("meta[name='bfg:api']").attr "content"
-    @userid = $("meta[name='bfg:user']").attr "content"
-    @locale = $("meta[name='bfg:locale']").attr "content"
-    @count = $("meta[name='bfg:count']").attr "content"
-    @annotation_length = 35;
+    # load settings
+    @api_key = if this.s('api') then this.s('api') else null
+    @userid = if this.s('user') then this.s('user') else null 
+    @locale = if this.s('locale') then this.s('locale') else 'en-US' 
+    @count = if this.s('count') then this.s('count') else 100
+    @annotation_length = 35 
+    @loaded = false
 
-    # TODO: Finish with locales
-    #option = { resGetPath: 'js/locales/__lng__.json', lng: 'en-US' }
-    #$.i18n.init(option, (t) ->
-    #  appName = t("key")
-    #)
+    if !@api_key || !@userid
+      this.d 'Cannot load BFG+ because of wrong initial params'
+      return false    
+
     this.prepare_container()
+    this.show_progress_bar()
+
+    option = { resGetPath: 'js/locales/__lng__.json', lng: @locale, debug: true }
+    $.i18n.init(option, (t) ->
+      appName = t("key")
+    )
+
+    @loaded = true
+    
     this.load_blog()
+
+  show_progress_bar: ->
+    html  = "<div class='progress progress-striped active bfg-progress-bar'>"
+    html += "<div class='bar' id='bfg-progress-bar' style='width: 10%;'></div>"
+    html += "</div>"
+    $("#bfg div.bfg-container div.bfg-body").html html
+
+  set_progress_bar: (value) ->
+    value = 10 if value < 0 || value > 100
+    $('#bfg-progress-bar').css('width',value+'%')
+
+  s: (name) ->
+    return null if !name
+    $("meta[name='bfg:"+name+"']").attr "content"
 
   # prepares necessary tags for posts and messages
   prepare_container: ->
@@ -48,14 +72,20 @@ class Bfg
 
   # loads blog data and render it 
   load_blog: ->
+    return false if !@loaded
     $.getJSON('https://www.googleapis.com/plus/v1/people/'+@userid+'/activities/public?maxResults='+@count+'&key='+@api_key, (data) =>
+      @set_progress_bar(40)
       @posts = data['items']
       @process_posts()
     )
 
   # displays message with type and text
   message: (text, type = 'info') ->
-    $("#bfg div.bfg-container div.bfg-body").html("<span class='bfg-message-"+type+"'>"+text+"</span>")
+    html  = "<div class='"+type+"'>"
+    html += "<button type='button' class='close' data-dismiss='"+type+"'>&times;</button>"
+    html += text
+    html += "</div>"
+    $("#bfg div.bfg-container div.bfg-message").html html
 
   # returns preview imag url for post
   post_preview: (post) ->
@@ -80,7 +110,8 @@ class Bfg
 
   post_content: (post) ->
     if post['object']['attachments'] && post['object']['attachments'][0]
-      return  post['object']['content'] + "<div class='bfg-post-read-more'><a href='"+post['object']['attachments'][0]['url']+"'>Read more</a>"
+      # TODO Add switch here
+      return  post['object']['content'] + "<div class='bfg-post-read-more'><a href='"+post['object']['attachments'][0]['url']+"'>Read more</a></div>"
     else
       return post['object']['content']
 
@@ -114,10 +145,9 @@ class Bfg
   # creates a plate with short info of particular post from post variable
   pack_post: (post) ->
     preview = this.post_preview(post)
-    html  = "<div id='bfg-post-"+post['id']+"' class='bfg-post bfg-post-background-" + this.post_type(post) + "' data-id='"+post['id']+"' data-image='"+this.post_preview(post)+"' >"
+    html  = "<div id='bfg-post-"+post['id']+"' class='img-polaroid1 thumbnail bfg-post bfg-post-background-" + this.post_type(post) + "' data-id='"+post['id']+"' data-image='"+this.post_preview(post)+"'>"
     html += "<span class='bfg-post-header'>"+this.post_annotation(post)+"</span>"
     html += "<div class='bfg-post-body'>"+this.post_body(post)+"</div>"
-    html += "<a href='#bfg-post-"+post['id']+"-modal' role='button' class='btn' data-toggle='modal'>Launch demo modal</a>"
     html += "</div>"
     return html
 
@@ -143,9 +173,10 @@ class Bfg
   render_posts: (html) ->
     $("#bfg div.bfg-container div.bfg-body").html html
     $(".bfg-post").click ->
-      #$('#bfg-post-'+$(this).data('id')+'-modal').modal 
-      #$('#bfg-post-'+$(this).data('id')+'-modal').modal('show')
-      # { show:true }
+      $('#bfg-post-'+$(this).data('id')+'-modal').modal
+      #({ show:true })
+      $('#bfg-post-'+$(this).data('id')+'-modal').modal('show')
+      
 
   # writes object data into Chrome console
   # this is for Chrome only, others browsers - fuck you!
