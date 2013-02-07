@@ -132,14 +132,14 @@ class Bfg
     html  = "<div id='bfg-post-"+post['id']+"-modal' class='modal hide fade' tabindex='-1' role='dialog' aria-labelledby='BfgPostLabel-"+post['id']+"' aria-hidden='true'>"
     html += "<div class='modal-header'>"
     # close button
-    html += "<a href='#' class='close' data-dismiss='modal'><i class='icon-remove'></i></a>"
+    html += "<a href='#' class='close' data-dismiss='modal' aria-hidden='true'><i class='icon-remove'></i></a>"
     # post title
     html += "<h3 id='BfgPostLabel-"+post['id']+"'>"+this.post_title(post)+"</h3>"
     html += "</div>"
     # post body
     html += "<div class='modal-body'><div class='bfg-post-type'>Type: "+this.post_type(post)+"</div><div class='bfg-post-main-container'>"+this.post_content(post)+"</div></div>"
     html += "<div class='modal-footer'>"
-    html += "<button class='btn' data-dismiss='modal' aria-hidden='true'>Close</button>"
+    html += "<button class='btn close_button' data-dismiss='modal' aria-hidden='true'>Close</button>"
     html += "</div></div>" 
 
   # creates a plate with short info of particular post from post variable
@@ -147,7 +147,8 @@ class Bfg
     preview = this.post_preview(post)
     html  = "<div id='bfg-post-"+post['id']+"' class='thumbnail bfg-post bfg-post-background-" + this.post_type(post) + "' data-id='"+post['id']+"' data-image='"+this.post_preview(post)+"'>"
     html += "<span class='bfg-post-header'>"+this.post_annotation(post)+"</span>"
-    html += "<div class='bfg-post-body'>"+this.post_body(post)+"</div>"
+    #html += "<div class='bfg-post-body'>"+this.post_body(post)+"</div>"
+    $('body').append this.post_body(post)
     html += "</div>"
     return html
 
@@ -172,11 +173,11 @@ class Bfg
   # puts posts array into dom_obj
   render_posts: (html) ->
     $("#bfg div.bfg-container div.bfg-body").html html
-    $(".bfg-post").click ->
-      $('#bfg-post-'+$(this).data('id')+'-modal').modal
-      #({ show:true })
-      $('#bfg-post-'+$(this).data('id')+'-modal').modal('show')
-      
+    $(".bfg-post").each (index) -> 
+      id = '#bfg-post-'+$(this).data('id')+'-modal'
+      $(this).click ->
+        $(id).modal('show')
+
 
   # writes object data into Chrome console
   # this is for Chrome only, others browsers - fuck you!
