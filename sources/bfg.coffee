@@ -132,7 +132,7 @@ class Bfg
     html  = "<div id='bfg-post-"+post['id']+"-modal' class='modal hide fade' tabindex='-1' role='dialog' aria-labelledby='BfgPostLabel-"+post['id']+"' aria-hidden='true'>"
     html += "<div class='modal-header'>"
     # close button
-    html += "<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>x</button>"
+    html += "<a href='#' class='close' data-dismiss='modal'><i class='icon-remove'></i></a>"
     # post title
     html += "<h3 id='BfgPostLabel-"+post['id']+"'>"+this.post_title(post)+"</h3>"
     html += "</div>"
@@ -145,7 +145,7 @@ class Bfg
   # creates a plate with short info of particular post from post variable
   pack_post: (post) ->
     preview = this.post_preview(post)
-    html  = "<div id='bfg-post-"+post['id']+"' class='img-polaroid1 thumbnail bfg-post bfg-post-background-" + this.post_type(post) + "' data-id='"+post['id']+"' data-image='"+this.post_preview(post)+"'>"
+    html  = "<div id='bfg-post-"+post['id']+"' class='thumbnail bfg-post bfg-post-background-" + this.post_type(post) + "' data-id='"+post['id']+"' data-image='"+this.post_preview(post)+"'>"
     html += "<span class='bfg-post-header'>"+this.post_annotation(post)+"</span>"
     html += "<div class='bfg-post-body'>"+this.post_body(post)+"</div>"
     html += "</div>"
