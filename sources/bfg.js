@@ -108,8 +108,13 @@
     };
 
     Bfg.prototype.post_preview = function(post) {
+      var default_image;
+      default_image = './img/post-bg-';
       if (post['object']['attachments'] && post['object']['attachments'][0]) {
+        console.log(this.post_type(post));
         switch (this.post_type(post)) {
+          case "post":
+            return post['object']['attachments'][0]['image']['url'];
           case "photo":
             return post['object']['attachments'][0]['image']['url'];
           case "video":
@@ -117,19 +122,24 @@
           case "album":
             return post['object']['attachments'][0]['thumbnails'][0]['image']['url'];
           case "article":
-            return null;
+            return '';
+          case "event":
+            return '';
           default:
-            return this.d(post);
+            return '';
         }
       } else {
-        return null;
+        return '';
       }
     };
 
     Bfg.prototype.post_annotation = function(post) {
       var arr, chunk, ret, _i, _len;
+      if (post['annotation']) {
+        return post['annotation'];
+      }
       if (!post['title'] || post['title'].length === 0 || post['title'].length < this.annotation_length) {
-        return "";
+        return post['title'];
       }
       arr = post['title'].split(/\s/);
       ret = "";
@@ -194,6 +204,11 @@
       return $(".bfg-post").each(function(index) {
         var id;
         id = '#bfg-post-' + $(this).data('id') + '-modal';
+        if ($(this).data('image').length > 0) {
+          $(this).css('background-image', 'url(' + $(this).data('image') + ')');
+          $(this).css('background-position', '40% 40%');
+          $(this).css('background-size', '250%');
+        }
         return $(this).click(function() {
           return $(id).modal('show');
         });

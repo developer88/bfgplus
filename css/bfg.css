@@ -32,9 +32,22 @@ div#bfg {
 }
 
 .bfg-post-header {
-  padding-top: 5px;
+  /*padding-top: 5px;
   padding-left: 3px;
-  padding-right: 3px;
+  padding-right: 3px;*/
+  background-color: white;
+}
+
+.bfg-post-background-event {
+  background-image: url('./img/post-bg-event.jpg');
+}
+
+.bfg-post-background-article {
+  background-image: url('./img/post-bg-article.jpg');
+}
+
+.bfg-post-background-photo {
+  background-image: url('./img/post-bg-default.jpg');
 }
 
 

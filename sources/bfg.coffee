@@ -87,22 +87,28 @@ class Bfg
     html += "</div>"
     $("#bfg div.bfg-container div.bfg-message").html html
 
-  # returns preview imag url for post
+  # returns preview image url for post
   post_preview: (post) ->
+    default_image = './img/post-bg-'
     if post['object']['attachments'] && post['object']['attachments'][0]
+      console.log this.post_type(post)
       switch this.post_type(post)
+        when "post"  then return post['object']['attachments'][0]['image']['url']
         when "photo" then return post['object']['attachments'][0]['image']['url']
         when "video" then return post['object']['attachments'][0]['image']['url']
         when "album" then return post['object']['attachments'][0]['thumbnails'][0]['image']['url']
-        when "article" then return null
-        else this.d post     
+        when "article" then return ''
+        when "event" then return ''
+        else return ''
+        #else this.d post     
     else
-      return null
+      return ''
 
   # return annotation for post
   post_annotation: (post) ->
+    return post['annotation'] if post['annotation']
     # TODO refactor this
-    return "" if !post['title'] || post['title'].length == 0 || post['title'].length < @annotation_length
+    return post['title'] if !post['title'] || post['title'].length == 0 || post['title'].length < @annotation_length
     arr = post['title'].split(/\s/);
     ret = ""
     (ret += (if ret.length == 0 then '' else ' ') + chunk ) for chunk in arr when ret.length < @annotation_length
@@ -175,6 +181,10 @@ class Bfg
     $("#bfg div.bfg-container div.bfg-body").html html
     $(".bfg-post").each (index) -> 
       id = '#bfg-post-'+$(this).data('id')+'-modal'
+      if $(this).data('image').length > 0
+        $(this).css('background-image', 'url(' + $(this).data('image') + ')')
+        $(this).css('background-position','40% 40%')
+        $(this).css('background-size','250%')
       $(this).click ->
         $(id).modal('show')
 
