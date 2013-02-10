@@ -152,9 +152,36 @@
       return ret + '...';
     };
 
+    Bfg.prototype.prepare_content_thumbnails = function(post) {
+      var thumbnail, thumbnails, _i, _len, _ref;
+      if (post['object']['attachments'][0]['thumbnails'] === void 0) {
+        return "";
+      }
+      thumbnails = "<ul class='thumbnails'>";
+      _ref = post['object']['attachments'][0]['thumbnails'];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        thumbnail = _ref[_i];
+        thumbnails += "<li class='span3'><a href='" + thumbnail['url'] + "' class='thumbnail'><img alt='' src='" + thumbnail['image']['url'] + "'/></a>" + "</li>";
+      }
+      return thumbnails += "</ul>";
+    };
+
     Bfg.prototype.post_content = function(post) {
+      var read_more;
       if (post['object']['attachments'] && post['object']['attachments'][0]) {
-        return post['object']['content'] + "<div class='bfg-post-read-more'><a href='" + post['object']['attachments'][0]['url'] + "'>Read more</a></div>";
+        read_more = "<div class='bfg-post-read-more'><i class='icon-arrow-right'></i><a href='" + post['object']['attachments'][0]['url'] + "' target='_blank'>Read more</a></div>";
+        switch (this.post_type(post)) {
+          case "photo":
+            return post['object']['content'] + "<div class='bfg-photo-content'><img src='" + post['object']['attachments'][0]['image']['url'] + "' /></div>" + read_more;
+          case "article":
+            return post['object']['content'] + "<div class='bfg-article-content well well-large'>" + post['object']['attachments'][0]['content'] + (post['object']['attachments'][0]['fullImage'] !== void 0 ? "<img src='" + post['object']['attachments'][0]['fullImage']['url'] + "' class='img-polaroid'/>" : "") + "</div>" + read_more;
+          case "video":
+            return post['object']['content'] + "<div class='bfg-video-content'>" + (post['object']['attachments'][0]['embed'] !== void 0 ? "<embed src='" + post['object']['attachments'][0]['embed']['url'] + "' type='" + post['object']['attachments'][0]['embed']['type'] + "'>" : void 0) + "</div>" + read_more;
+          case "album":
+            return post['object']['content'] + "<div class='bfg-album-content'>" + (post['object']['attachments'][0]['thumbnails'] !== void 0 ? this.prepare_content_thumbnails(post) : void 0) + "</div>" + read_more;
+          default:
+            return post['object']['content'] + read_more;
+        }
       } else {
         return post['object']['content'];
       }
@@ -183,7 +210,7 @@
       html += "<a href='#' class='close' data-dismiss='modal' aria-hidden='true'><i class='icon-remove'></i></a>";
       html += "<h3 id='BfgPostLabel-" + post['id'] + "'>" + this.post_title(post) + "</h3>";
       html += "</div>";
-      html += "<div class='modal-body'><div class='bfg-post-type'>Type: " + this.post_type(post) + "</div><div class='bfg-post-main-container'>" + this.post_content(post) + "</div></div>";
+      html += "<div class='modal-body'><div class='bfg-post-type'> " + this.post_type(post) + "</div><div class='bfg-post-main-container'>" + this.post_content(post) + "</div></div>";
       html += "<div class='modal-footer'>";
       html += "<button class='btn close_button' data-dismiss='modal' aria-hidden='true'>Close</button>";
       return html += "</div></div>";

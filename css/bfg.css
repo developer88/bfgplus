@@ -38,6 +38,45 @@ div#bfg {
   background-color: white;
 }
 
+.bfg-post-type {
+  display: none;
+}
+
+.bfg-photo-content {
+  text-align: center;
+  margin-top: 5px;
+}
+
+.bfg-article-content {
+  margin-top: 10px;
+}
+
+.bfg-video-content {
+  margin-top: 10px;
+}
+
+.bfg-post-read-more {
+  margin-top: 10px;
+}
+
+.bfg-video-content {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.bfg-video-content embed {
+  min-width: 520px;
+  min-height: 290px;
+}
+
+.bfg-album-content {
+  margin-top: 5px;
+}
+
+.bfg-post-read-more i {
+  margin-right: 4px;
+}
+
 .bfg-post-background-event {
   background-image: url('../img/post-bg-event.jpg');
 }

@@ -114,10 +114,22 @@ class Bfg
     (ret += (if ret.length == 0 then '' else ' ') + chunk ) for chunk in arr when ret.length < @annotation_length
     return ret + '...'
 
+  prepare_content_thumbnails: (post) ->
+    return "" if post['object']['attachments'][0]['thumbnails'] == undefined
+    thumbnails = "<ul class='thumbnails'>"
+    thumbnails += ("<li class='span3'><a href='"+thumbnail['url']+"' class='thumbnail'><img alt='' src='"+thumbnail['image']['url']+"'/></a>"+"</li>") for thumbnail in post['object']['attachments'][0]['thumbnails']
+    # TODO finish this (if thumbnail['description'].length != 0 then "<p>"+thumbnail['description']+"</p>")
+    thumbnails += "</ul>"
+
   post_content: (post) ->
     if post['object']['attachments'] && post['object']['attachments'][0]
-      # TODO Add switch here
-      return  post['object']['content'] + "<div class='bfg-post-read-more'><a href='"+post['object']['attachments'][0]['url']+"'>Read more</a></div>"
+      read_more = "<div class='bfg-post-read-more'><i class='icon-arrow-right'></i><a href='"+post['object']['attachments'][0]['url']+"' target='_blank'>Read more</a></div>"
+      switch this.post_type(post)
+        when "photo" then return post['object']['content'] + "<div class='bfg-photo-content'><img src='"+post['object']['attachments'][0]['image']['url']+"' /></div>" + read_more
+        when "article" then return post['object']['content'] + "<div class='bfg-article-content well well-large'>"+post['object']['attachments'][0]['content'] + ( if post['object']['attachments'][0]['fullImage'] != undefined then "<img src='"+post['object']['attachments'][0]['fullImage']['url']+"' class='img-polaroid'/>" else "") + "</div>" + read_more
+        when "video" then return post['object']['content'] + "<div class='bfg-video-content'>" + ( if post['object']['attachments'][0]['embed'] != undefined then "<embed src='"+post['object']['attachments'][0]['embed']['url']+"' type='"+post['object']['attachments'][0]['embed']['type']+"'>") + "</div>" + read_more
+        when "album" then return post['object']['content'] + "<div class='bfg-album-content'>" + ( if post['object']['attachments'][0]['thumbnails'] != undefined then this.prepare_content_thumbnails(post) ) + "</div>" + read_more
+        else return post['object']['content'] + read_more
     else
       return post['object']['content']
 
@@ -143,7 +155,7 @@ class Bfg
     html += "<h3 id='BfgPostLabel-"+post['id']+"'>"+this.post_title(post)+"</h3>"
     html += "</div>"
     # post body
-    html += "<div class='modal-body'><div class='bfg-post-type'>Type: "+this.post_type(post)+"</div><div class='bfg-post-main-container'>"+this.post_content(post)+"</div></div>"
+    html += "<div class='modal-body'><div class='bfg-post-type'> "+this.post_type(post)+"</div><div class='bfg-post-main-container'>"+this.post_content(post)+"</div></div>"
     html += "<div class='modal-footer'>"
     html += "<button class='btn close_button' data-dismiss='modal' aria-hidden='true'>Close</button>"
     html += "</div></div>" 
