@@ -39,15 +39,18 @@ div#bfg {
 }
 
 .bfg-post-background-event {
-  background-image: url('./img/post-bg-event.jpg');
+  background-image: url('../img/post-bg-event.jpg');
 }
 
 .bfg-post-background-article {
-  background-image: url('./img/post-bg-article.jpg');
+  background-image: url('../img/post-bg-article.jpg');
 }
 
 .bfg-post-background-photo {
-  background-image: url('./img/post-bg-default.jpg');
+  background-image: url('../img/post-bg-default.jpg');
 }
 
+.bfg-post-background-note {
+  background-image: url('../img/post-bg-note.jpg');
+}
 
