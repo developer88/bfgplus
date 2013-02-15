@@ -9,13 +9,7 @@
   </head>
   <body>
     <!-- BFG markup -->
-    <div id="bfg">
-      <meta name="bfg:api" content="AIzaSyCQ0r-Z6wsYLFEbCGfJEzmrMuc4fc2BWdw"></meta>
-      <meta name="bfg:user" content="102960425588359758591"></meta>
-      <meta name="bfg:locale" content="en-US"></meta>
-      <meta name="bfg:count" content="100"></meta>
-      <div class='bfg-container'></div>
-    </div>
+    <div id="bfg-sample"></div>
     <!-- Javascript staff -->
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script src="js/bootstrap.min.js"></script>
@@ -23,5 +17,14 @@
     <!-- Javascript BFG core -->
     <!--<script src="js/bfg.min.js"></script>-->
     <script src="sources/bfg.js"></script>
+    <script>
+      var bfg = new Bfg({
+        dom:'#bfg-sample',
+        api:'AIzaSyCQ0r-Z6wsYLFEbCGfJEzmrMuc4fc2BWdw',
+        user:'102960425588359758591',
+        locale:'en-US',
+        count:'100'
+      });
+    </script>
   </body>
 </html>
