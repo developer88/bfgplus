@@ -1,15 +1,21 @@
 /* BFG+ main styles */
 
-div#bfg {
-  /*width: 80%;*/
-}
-
-.bfg-body{
+.bfg-body {
   display: inline;
   margin: 0 auto;
 }
 
-.bfg-progress-bar{
+.bfg-margin-auto {
+  padding: 10px;
+  height: 100%;
+}
+
+.bfg-margin-auto .progress {
+  position: relative;
+  top: 50%;
+}
+
+.bfg-progress-bar {
   margin-top: 10px;
   margin-left: 10px;
   margin-right: 10px;

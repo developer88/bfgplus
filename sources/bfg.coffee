@@ -18,7 +18,6 @@
 # 4. tests + document code with docco
 # 5. main page & RTM
 
-
 class Post
   constructor: (@data) ->
     @options = @data['options']
@@ -34,29 +33,9 @@ class Post
 
   determine_album_content: ->
     return "" if !(@attachments.length > 0 && @attachments[0]['thumbnails'] != undefined && @attachments[0]['thumbnails'].length > 0) 
-    console.log   @attachments[0]['thumbnails']
-    # TODO finish with slider
-    #id = 'bfg-post-'+@id+'-carousel'
-    #items = ""
-    #indicators = ""
-    #index = -1
-    #indicators += ('<li data-target="#'+id+'" data-slide-to="'+(index+=1)+'" class="'+(if index == 0 then "active" else "")+'"></li>') for thumbnail in @attachments[0]['thumbnails']
-    #index = -1
-    #items += ('<div class="item '+(if index == 0 then "active" else "")+'"><img src="'+thumbnail['image']['url']+'" alt="">'+(if thumbnail['description'].length > 0 then '<div class="carousel-caption"><p>'+thumbnail['description'] + '</p></div>' else "") + '</div>') for thumbnail in @attachments[0]['thumbnails']
-    #html = '<div id="'+id+'" class="carousel slide">'
-    #html += '<ol class="carousel-indicators">'   
-    #html += indicators
-    #html += '</ol>'
-    #html += '<div class="carousel-inner">'
-    #html += items
-    #html += '</div>'
-    #html += '<a class="carousel-control left" href="#'+id+'" data-slide="prev">&lsaquo;</a>'
-    #html += '<a class="carousel-control right" href="#'+id+'" data-slide="next">&rsaquo;</a>'
-    #html += '</div>'
     thumbnails = "<ul class='thumbnails'>"
     index = 0
     thumbnails += ("<li class='"+(if index == 0 then 'span4' else 'span2')+"' data-number='"+(index += 1)+"'><a href='"+thumbnail['url']+"' class='thumbnail'><img alt='' src='"+thumbnail['image']['url']+"'/></a>"+"</li>") for thumbnail in @attachments[0]['thumbnails']
-    # TODO (if thumbnail['description'].length > 0 then "<p>"+thumbnail['description']+"</p>" else "")
     thumbnails += "</ul>"
 
   determine_annotation: ->
@@ -110,14 +89,6 @@ class Post
     carousel_id = '#bfg-post-'+@id+'-carousel'
     $(plate_id).click =>
       $(modal_id).modal 'show'
-      console.log @type
-      if @type == 'video'
-        console.log @data
-    # carousel staff
-    #if @type is 'album'
-      #$(modal_id).on('shown', =>
-        #$(carousel_id).carousel()
-      #)
     if @preview
       $(plate_id).css('background-image', 'url(' + @preview + ')')
       $(plate_id).css('background-position','40% 40%')
@@ -174,6 +145,7 @@ class Bfg
 
     $(@options['dom']).html ''
     
+    @place_and_show_progress_bar()
     @load_blog()
 
   load_blog: ->
@@ -181,18 +153,22 @@ class Bfg
       @posts = data['items']
       @d @posts
       if @posts.length > 0
+        @hide_div_and_prepare_container()
         @process_post(post) for post in @posts when post['provider']['title'] isnt 'Google Check-ins'
-      #@process_posts() if @posts.length > 0
     )
 
   # processes posts received from Google+
   process_post: (post) ->
     post['options'] = @options
     defined_post = new Post(post)
-    #@processed_posts << new Post(post)
     defined_post.render_to(@options['dom'])
-    #@processed_posts << new Post((post['options'] = @options)) for post in @posts when post['provider']['title'] isnt 'Google Check-ins'
-    # for post in @processed_posts
+
+  place_and_show_progress_bar: ->
+    $(@options['dom']).html('<div class="bfg-margin-auto"><div class="progress progress-striped active"><div class="bar" style="width: 20%;"></div></div></div>')
+
+  hide_div_and_prepare_container: ->
+    $(@options['dom']).html ''
+    $(@options['dom']).addClass 'bfg-body'
 
   # writes object data into Chrome console
   # this is for Chrome only, others browsers - fuck you!
@@ -214,19 +190,6 @@ class Bfg
   #s: (name) ->
   #  return null if !name
   #  $("meta[name='bfg:"+name+"']").attr "content"
-
-  # prepares necessary tags for posts and messages
-  #prepare_container: ->
-  #  $("#bfg div.bfg-container").html "<div class='bfg-message'></div><div class='bfg-body'></div>"
-  
-  # returns loaded posts
-  #blog_posts: ->
-  #  @posts
-
-   
-
-  # loads blog data and render it 
-
 
   # displays message with type and text
   #message: (text, type = 'info') ->
@@ -259,6 +222,5 @@ class Bfg
 
 
 # Let's roll!
-#bfg = new Bfg
 root = exports ? this
 root.Bfg = Bfg

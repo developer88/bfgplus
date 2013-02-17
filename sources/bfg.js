@@ -22,7 +22,6 @@
       if (!(this.attachments.length > 0 && this.attachments[0]['thumbnails'] !== void 0 && this.attachments[0]['thumbnails'].length > 0)) {
         return "";
       }
-      console.log(this.attachments[0]['thumbnails']);
       thumbnails = "<ul class='thumbnails'>";
       index = 0;
       _ref = this.attachments[0]['thumbnails'];
@@ -119,11 +118,7 @@
       plate_id = '#bfg-post-' + this.id;
       carousel_id = '#bfg-post-' + this.id + '-carousel';
       $(plate_id).click(function() {
-        $(modal_id).modal('show');
-        console.log(_this.type);
-        if (_this.type === 'video') {
-          return console.log(_this.data);
-        }
+        return $(modal_id).modal('show');
       });
       if (this.preview) {
         $(plate_id).css('background-image', 'url(' + this.preview + ')');
@@ -233,6 +228,7 @@
       };
       $.i18n.init(option);
       $(this.options['dom']).html('');
+      this.place_and_show_progress_bar();
       this.load_blog();
     }
 
@@ -243,6 +239,7 @@
         _this.posts = data['items'];
         _this.d(_this.posts);
         if (_this.posts.length > 0) {
+          _this.hide_div_and_prepare_container();
           _ref = _this.posts;
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -261,6 +258,15 @@
       post['options'] = this.options;
       defined_post = new Post(post);
       return defined_post.render_to(this.options['dom']);
+    };
+
+    Bfg.prototype.place_and_show_progress_bar = function() {
+      return $(this.options['dom']).html('<div class="bfg-margin-auto"><div class="progress progress-striped active"><div class="bar" style="width: 20%;"></div></div></div>');
+    };
+
+    Bfg.prototype.hide_div_and_prepare_container = function() {
+      $(this.options['dom']).html('');
+      return $(this.options['dom']).addClass('bfg-body');
     };
 
     Bfg.prototype.d = function(obj) {
