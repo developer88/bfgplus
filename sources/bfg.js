@@ -217,7 +217,7 @@
       this.options['annotation_length'] = 35;
       this.processed_posts = [];
       this.posts = [];
-      if (!this.options['api'] || !this.options['user']) {
+      if (!this.options['api'] || !this.options['user'] || !this.options['dom']) {
         this.d('Cannot load BFG+ because of wrong initial params');
         return false;
       }
@@ -237,7 +237,6 @@
       return $.getJSON('https://www.googleapis.com/plus/v1/people/' + this.options['user'] + '/activities/public?maxResults=' + this.options['count'] + '&key=' + this.options['api'], function(data) {
         var post, _i, _len, _ref, _results;
         _this.posts = data['items'];
-        _this.d(_this.posts);
         if (_this.posts.length > 0) {
           _this.hide_div_and_prepare_container();
           _ref = _this.posts;

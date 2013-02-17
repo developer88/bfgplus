@@ -14,7 +14,6 @@
 # But this is just a dream.
 
 #TODO
-# 2. refactor
 # 4. tests + document code with docco
 # 5. main page & RTM
 
@@ -133,10 +132,11 @@ class Bfg
     }
 
   constructor: (@options) ->
+    #TODO default settings
     @options['annotation_length'] = 35
     @processed_posts = []
     @posts = []
-    if !@options['api'] || !@options['user']
+    if !@options['api'] || !@options['user'] || !@options['dom']
       @d 'Cannot load BFG+ because of wrong initial params'
       return false 
 
@@ -151,7 +151,6 @@ class Bfg
   load_blog: ->
     $.getJSON('https://www.googleapis.com/plus/v1/people/'+@options['user']+'/activities/public?maxResults='+@options['count']+'&key='+@options['api'], (data) =>
       @posts = data['items']
-      @d @posts
       if @posts.length > 0
         @hide_div_and_prepare_container()
         @process_post(post) for post in @posts when post['provider']['title'] isnt 'Google Check-ins'
@@ -174,52 +173,6 @@ class Bfg
   # this is for Chrome only, others browsers - fuck you!
   d: (obj) ->
     console.log obj
-
-
-
-  #show_progress_bar: ->
-  #  html  = "<div class='progress progress-striped active bfg-progress-bar'>"
-  #  html += "<div class='bar' id='bfg-progress-bar' style='width: 10%;'></div>"
-  #  html += "</div>"
-  #  $("#bfg div.bfg-container div.bfg-body").html html
-
-  #set_progress_bar: (value) ->
-  #  value = 10 if value < 0 || value > 100
-  #  $('#bfg-progress-bar').css('width',value+'%')
-
-  #s: (name) ->
-  #  return null if !name
-  #  $("meta[name='bfg:"+name+"']").attr "content"
-
-  # displays message with type and text
-  #message: (text, type = 'info') ->
-  #  html  = "<div class='"+type+"'>"
-  #  html += "<button type='button' class='close' data-dismiss='"+type+"'>&times;</button>"
-  #  html += text
-  #  html += "</div>"
-  #  $("#bfg div.bfg-container div.bfg-message").html html
-
-
-
-    #@d post
-    #title
-    #url
-    #id
-    #annotation
-    #object.content
-    #attachments[]
-    #  url
-    #  objectType
-    #  id
-    #  article ->
-    #   content
-    #   url
-    #  image ->
-    #   image
-    #     url
-
-
-
 
 # Let's roll!
 root = exports ? this
