@@ -13,20 +13,22 @@
       this.preview = this.determine_preview_background();
       this.title = this.determine_title();
       this.annotation = this.determine_annotation();
-      this.thumbnails = this.determine_thumbnails();
+      this.album_content = this.determine_album_content();
       this.content = this.determine_content();
     }
 
-    Post.prototype.determine_thumbnails = function() {
-      var thumbnail, thumbnails, _i, _len, _ref;
+    Post.prototype.determine_album_content = function() {
+      var index, thumbnail, thumbnails, _i, _len, _ref;
       if (!(this.attachments.length > 0 && this.attachments[0]['thumbnails'] !== void 0 && this.attachments[0]['thumbnails'].length > 0)) {
         return "";
       }
+      console.log(this.attachments[0]['thumbnails']);
       thumbnails = "<ul class='thumbnails'>";
+      index = 0;
       _ref = this.attachments[0]['thumbnails'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         thumbnail = _ref[_i];
-        thumbnails += "<li class='span3'><a href='" + thumbnail['url'] + "' class='thumbnail'><img alt='' src='" + thumbnail['image']['url'] + "'/></a>" + "</li>";
+        thumbnails += "<li class='" + (index === 0 ? 'span4' : 'span2') + "' data-number='" + (index += 1) + "'><a href='" + thumbnail['url'] + "' class='thumbnail'><img alt='' src='" + thumbnail['image']['url'] + "'/></a>" + "</li>";
       }
       return thumbnails += "</ul>";
     };
@@ -65,19 +67,22 @@
         html += "<div>" + this.data['content'] + "</div>";
       }
       read_more = "<div class='bfg-post-read-more'><i class='icon-arrow-right'></i><a href='" + (this.attachments.length === 0 ? this.data['object']['url'] : this.attachments[0]['url']) + "' target='_blank'>" + $.t("read_more") + "</a></div>";
+      html += read_more;
       if (this.attachments.length > 0) {
         switch (this.type) {
           case "photo":
-            return html + "<div class='bfg-photo-content'><img src='" + this.attachments[0]['image']['url'] + "' /></div>";
+            html += "<div class='bfg-photo-content'><img src='" + this.attachments[0]['image']['url'] + "' /></div>";
+            break;
           case "article":
-            return html + "<div class='bfg-article-content well well-large'>" + this.data['object']['attachments'][0]['content'] + (this.attachments[0]['fullImage'] !== void 0 ? "<img src='" + this.attachments[0]['fullImage']['url'] + "' class='img-polaroid'/>" : "") + "</div>";
+            html += "<div class='bfg-article-content well well-large'>" + this.data['object']['attachments'][0]['content'] + (this.attachments[0]['fullImage'] !== void 0 ? "<img src='" + this.attachments[0]['fullImage']['url'] + "' class='img-polaroid'/>" : "") + "</div>";
+            break;
           case "video":
-            return html + "<div class='bfg-video-content'>" + (this.attachments[0]['embed'] !== void 0 ? "<embed src='" + this.attachments[0]['embed']['url'] + "' type='" + this.attachments[0]['embed']['type'] + "'>" : void 0) + "</div>";
+            html += "<div class='bfg-video-content'>" + "<div class='video-caption'>" + this.attachments[0]['displayName'] + "</div>" + (this.attachments[0]['embed'] !== void 0 ? "<embed src='" + this.attachments[0]['embed']['url'] + "' type='" + this.attachments[0]['embed']['type'] + "'>" : "<img src='" + this.attachments[0]['image']['url'] + "' />") + "</div>";
+            break;
           case "album":
-            return html + "<div class='bfg-album-content'>" + (this.thumbnails.length !== void 0 ? this.thumbnails : void 0) + "</div>";
+            html += "<div class='bfg-album-content'>" + (this.album_content.length !== void 0 ? this.album_content : void 0) + "</div>";
         }
       }
-      html += read_more;
       return html;
     };
 
@@ -108,11 +113,17 @@
     };
 
     Post.prototype.place_callbacks = function() {
-      var modal_id, plate_id;
+      var carousel_id, modal_id, plate_id,
+        _this = this;
       modal_id = '#bfg-post-' + this.id + '-modal';
       plate_id = '#bfg-post-' + this.id;
+      carousel_id = '#bfg-post-' + this.id + '-carousel';
       $(plate_id).click(function() {
-        return $(modal_id).modal('show');
+        $(modal_id).modal('show');
+        console.log(_this.type);
+        if (_this.type === 'video') {
+          return console.log(_this.data);
+        }
       });
       if (this.preview) {
         $(plate_id).css('background-image', 'url(' + this.preview + ')');

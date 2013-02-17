@@ -51,10 +51,6 @@ div#bfg {
   margin-top: 10px;
 }
 
-.bfg-video-content {
-  margin-top: 10px;
-}
-
 .bfg-post-read-more {
   margin-top: 10px;
 }
@@ -67,6 +63,10 @@ div#bfg {
 .bfg-video-content embed {
   min-width: 520px;
   min-height: 290px;
+}
+
+.bfg-video-content .video-caption {
+  text-align: left;
 }
 
 .bfg-album-content {

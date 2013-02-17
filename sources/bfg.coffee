@@ -14,9 +14,7 @@
 # But this is just a dream.
 
 #TODO
-# 1. i18n
 # 2. refactor
-# 3. no initialization tags 
 # 4. tests + document code with docco
 # 5. main page & RTM
 
@@ -30,15 +28,35 @@ class Post
     @preview = @determine_preview_background()
     @title = @determine_title()
     @annotation = @determine_annotation()
-    @thumbnails = @determine_thumbnails()
+    @album_content = @determine_album_content()
     @content = @determine_content()
 
-  determine_thumbnails: ->
+
+  determine_album_content: ->
     return "" if !(@attachments.length > 0 && @attachments[0]['thumbnails'] != undefined && @attachments[0]['thumbnails'].length > 0) 
-    # make it as slider
+    console.log   @attachments[0]['thumbnails']
+    # TODO finish with slider
+    #id = 'bfg-post-'+@id+'-carousel'
+    #items = ""
+    #indicators = ""
+    #index = -1
+    #indicators += ('<li data-target="#'+id+'" data-slide-to="'+(index+=1)+'" class="'+(if index == 0 then "active" else "")+'"></li>') for thumbnail in @attachments[0]['thumbnails']
+    #index = -1
+    #items += ('<div class="item '+(if index == 0 then "active" else "")+'"><img src="'+thumbnail['image']['url']+'" alt="">'+(if thumbnail['description'].length > 0 then '<div class="carousel-caption"><p>'+thumbnail['description'] + '</p></div>' else "") + '</div>') for thumbnail in @attachments[0]['thumbnails']
+    #html = '<div id="'+id+'" class="carousel slide">'
+    #html += '<ol class="carousel-indicators">'   
+    #html += indicators
+    #html += '</ol>'
+    #html += '<div class="carousel-inner">'
+    #html += items
+    #html += '</div>'
+    #html += '<a class="carousel-control left" href="#'+id+'" data-slide="prev">&lsaquo;</a>'
+    #html += '<a class="carousel-control right" href="#'+id+'" data-slide="next">&rsaquo;</a>'
+    #html += '</div>'
     thumbnails = "<ul class='thumbnails'>"
-    thumbnails += ("<li class='span3'><a href='"+thumbnail['url']+"' class='thumbnail'><img alt='' src='"+thumbnail['image']['url']+"'/></a>"+"</li>") for thumbnail in @attachments[0]['thumbnails']
-    # TODO finish this (if thumbnail['description'].length != 0 then "<p>"+thumbnail['description']+"</p>")
+    index = 0
+    thumbnails += ("<li class='"+(if index == 0 then 'span4' else 'span2')+"' data-number='"+(index += 1)+"'><a href='"+thumbnail['url']+"' class='thumbnail'><img alt='' src='"+thumbnail['image']['url']+"'/></a>"+"</li>") for thumbnail in @attachments[0]['thumbnails']
+    # TODO (if thumbnail['description'].length > 0 then "<p>"+thumbnail['description']+"</p>" else "")
     thumbnails += "</ul>"
 
   determine_annotation: ->
@@ -56,13 +74,13 @@ class Post
     html = @data['title'] if @data['title']
     html += "<div>" + @data['content'] + "</div>" if @data['content']
     read_more = "<div class='bfg-post-read-more'><i class='icon-arrow-right'></i><a href='"+(if @attachments.length == 0 then @data['object']['url'] else @attachments[0]['url'])+"' target='_blank'>"+$.t("read_more")+"</a></div>"
+    html += read_more
     if @attachments.length > 0   
       switch @type
-        when "photo" then return html + "<div class='bfg-photo-content'><img src='"+@attachments[0]['image']['url']+"' /></div>"
-        when "article" then return html + "<div class='bfg-article-content well well-large'>"+@data['object']['attachments'][0]['content'] + ( if @attachments[0]['fullImage'] != undefined then "<img src='"+@attachments[0]['fullImage']['url']+"' class='img-polaroid'/>" else "") + "</div>"
-        when "video" then return html + "<div class='bfg-video-content'>" + ( if @attachments[0]['embed'] != undefined then "<embed src='"+@attachments[0]['embed']['url']+"' type='"+@attachments[0]['embed']['type']+"'>") + "</div>"
-        when "album" then return html + "<div class='bfg-album-content'>" + ( if @thumbnails.length != undefined then @thumbnails ) + "</div>"
-    html += read_more
+        when "photo" then html += "<div class='bfg-photo-content'><img src='"+@attachments[0]['image']['url']+"' /></div>"
+        when "article" then html += "<div class='bfg-article-content well well-large'>"+@data['object']['attachments'][0]['content'] + ( if @attachments[0]['fullImage'] != undefined then "<img src='"+@attachments[0]['fullImage']['url']+"' class='img-polaroid'/>" else "") + "</div>"
+        when "video" then html += "<div class='bfg-video-content'>" + "<div class='video-caption'>" + @attachments[0]['displayName'] + "</div>" + ( if @attachments[0]['embed'] != undefined then "<embed src='"+@attachments[0]['embed']['url']+"' type='"+@attachments[0]['embed']['type']+"'>" else "<img src='"+@attachments[0]['image']['url']+"' />") + "</div>"
+        when "album" then html +=  "<div class='bfg-album-content'>" + ( if @album_content.length != undefined then @album_content ) + "</div>"
     return html
 
   modal:  ->
@@ -89,8 +107,17 @@ class Post
   place_callbacks: ->
     modal_id = '#bfg-post-'+@id+'-modal'
     plate_id = '#bfg-post-'+@id
-    $(plate_id).click ->
+    carousel_id = '#bfg-post-'+@id+'-carousel'
+    $(plate_id).click =>
       $(modal_id).modal 'show'
+      console.log @type
+      if @type == 'video'
+        console.log @data
+    # carousel staff
+    #if @type is 'album'
+      #$(modal_id).on('shown', =>
+        #$(carousel_id).carousel()
+      #)
     if @preview
       $(plate_id).css('background-image', 'url(' + @preview + ')')
       $(plate_id).css('background-position','40% 40%')
