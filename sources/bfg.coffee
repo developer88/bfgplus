@@ -143,8 +143,8 @@ class Bfg
     option = { resStore: @languages(), lng: @options['locale'], debug: false }
     $.i18n.init option
 
-    $(@options['dom']).html ''
-    
+  initialise: ->
+    $(@options['dom']).html ''    
     @place_and_show_progress_bar()
     @load_blog()
 
