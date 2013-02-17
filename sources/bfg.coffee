@@ -163,7 +163,7 @@ class Bfg
     defined_post.render_to(@options['dom'])
 
   place_and_show_progress_bar: ->
-    $(@options['dom']).html('<div class="bfg-margin-auto"><div class="progress progress-striped active"><div class="bar" style="width: 20%;"></div></div></div>')
+    $(@options['dom']).html '<div class="bfg-margin-auto"><div class="progress progress-striped active"><div class="bar" style="width: 20%;"></div></div></div>'
 
   hide_div_and_prepare_container: ->
     $(@options['dom']).html ''
