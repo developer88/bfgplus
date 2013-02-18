@@ -1,23 +1,24 @@
 # Blog for Google+ (BFG)
+# ===================
 # v 0.0.1
 # by Eremin Andrey aka Developer, 2012-2013
-# http://eremin.me
+# [http://eremin.me](http://eremin.me)
 # 
 # The library provides an easy way to create a lightweight blog 
-# from posts of your Google+ profile.
+# with posts of your Google+ profile.
 # According to Google+ limitation BFG can only display 100 of your posts maximum.
 
-# Blog for Google+
-# This is just an atempt to create a blog using Google+ as a source of content.
+# **N.B.:**
+# *This is just an attempt to create a blog using Google+ as a source of content.
 # So my vision is one should not have lots of blogs (blogspot, wordpress etc. + twitter)
 # but should have only one profile in Google+ and many (if one need to do so) websites with this script.
-# But this is just a dream.
+# But this is just a dream.*
 
-#TODO
-# 4. tests + document code with docco
-# 5. main page & RTM
-
+# Class for Google+ Post
+# Receives **@data** as Google+ Post Json object
 class Post
+
+  # Constructor method
   constructor: (@data) ->
     @options = @data['options']
     @id = @data['id']
@@ -29,7 +30,7 @@ class Post
     @album_content = @determine_album_content()
     @content = @determine_content()
 
-
+  # Creates thumbnails for posts with album type
   determine_album_content: ->
     return "" if !(@attachments.length > 0 && @attachments[0]['thumbnails'] != undefined && @attachments[0]['thumbnails'].length > 0) 
     thumbnails = "<ul class='thumbnails'>"
@@ -37,6 +38,7 @@ class Post
     thumbnails += ("<li class='"+(if index == 0 then 'span4' else 'span2')+"' data-number='"+(index += 1)+"'><a href='"+thumbnail['url']+"' class='thumbnail'><img alt='' src='"+thumbnail['image']['url']+"'/></a>"+"</li>") for thumbnail in @attachments[0]['thumbnails']
     thumbnails += "</ul>"
 
+  # Creates annotation  - short text for post's description
   determine_annotation: ->
     return @data['annotation'] if @data['annotation']
     return "" if not @data['title']
@@ -47,6 +49,7 @@ class Post
       (ret += (if ret.length == 0 then '' else ' ') + chunk ) for chunk in arr when ret.length < @options['annotation_length']
       return ret + '...'
 
+  # Creates content for modal window based on post's type
   determine_content: ->
     html = ""
     html = @data['title'] if @data['title']
@@ -61,6 +64,7 @@ class Post
         when "album" then html +=  "<div class='bfg-album-content'>" + ( if @album_content.length != undefined then @album_content ) + "</div>"
     return html
 
+  # Generates modal window html
   modal:  ->
     html  = "<div id='bfg-post-"+@id+"-modal' class='modal hide fade' tabindex='-1' role='dialog' aria-labelledby='BfgPostLabel-"+@id+"' aria-hidden='true'>"
     html += "<div class='modal-header'>"
@@ -72,16 +76,19 @@ class Post
     html += "<button class='btn close_button' data-dismiss='modal' aria-hidden='true'>"+$.t("close")+"</button>"
     html += "</div></div>" 
 
+  # Generates plate html for posts
   html: ->
     html  = "<div id='bfg-post-"+@id+"' class='thumbnail bfg-post bfg-post-background-" + @type + "' data-id='"+@id+"' data-image='"+@preview+"'>"
     html += "<span class='bfg-post-header'>"+@annotation+"</span>"
     html += "</div>" 
 
+  # Append post's plate and modal window html to **dom_id** object on the page
   render_to: (dom_id) ->
     $(dom_id).append @html()
     $('body').append @modal()
     @place_callbacks()
 
+  # Bind callbacks to rendered objects
   place_callbacks: ->
     modal_id = '#bfg-post-'+@id+'-modal'
     plate_id = '#bfg-post-'+@id
@@ -93,12 +100,14 @@ class Post
       $(plate_id).css('background-position','40% 40%')
       $(plate_id).css('background-size','250%')    
 
+  # Creates title for post
   determine_title:  -> 
     if @data['title'].length > 0 
       return @data['title']
     else
       return $.t("type."+ @type)
 
+  # Creates background picture for post's plate
   determine_preview_background: ->
     if @attachments.length > 0
       switch @type
@@ -112,14 +121,34 @@ class Post
     else
       return ''
 
+  # Finds out post's type
   determine_type: ->
     if @attachments.length > 0
       return @attachments[0]['objectType']
     else
       'note'  
 
-
+# Main class for Blog for Google+
+# receives options:
+# * dom - CSS selector of DOM object to render BFG to  
+# * api - Google+ API key (you can generate it on your Google Dashboard)  
+# * user - Google+ user id to grab posts  
+# * locale - default locale (by default en-US, but can be ru-RU)  
+# * count - limit for post being displayed (default and maximum value is 100)  
+#
+# **Example:**
+# Define it like  
+# `var bfg = new Bfg({   
+#    dom:'#bfg-sample',  
+#    api:'sample-api-key',  
+#    user:'sample-user-id',  
+#    locale:'en-US',  
+#    count:100  
+#  });`  
+# and then initialize blog as `bfg.initialize();`
+#
 class Bfg
+  # Array with translations. You can add as much as you like translations to this array and use it with **locale** params
   languages: ->
     en = { translation: { 'read_more': 'Read more', 'close':'Close', 'type':{'video':'Video', 'post':'Post', 'photo':'Photo', 'album':'Album', 'article':'Article','event':'Event'} } }
     ru = { translation: { 'read_more': 'Подробнее', 'close':'Закрыть', 'type':{'video':'Видео', 'post':'Заметка', 'photo':'Фото', 'album':'Альбом', 'article':'Статья','event':'Событие'} } }
@@ -130,9 +159,11 @@ class Bfg
       'ru-RU': ru,
       ru: ru
     }
-
+  
+  # Main constructor class
   constructor: (@options) ->
-    #TODO default settings
+    @options['locale'] ||= 'en-US'
+    @options['count'] ||= 100
     @options['annotation_length'] = 35
     @processed_posts = []
     @posts = []
@@ -142,12 +173,14 @@ class Bfg
 
     option = { resStore: @languages(), lng: @options['locale'], debug: false }
     $.i18n.init option
-
+ 
+  # Method to start receiving Google+ posts and render them to the page
   initialise: ->
     $(@options['dom']).html ''    
     @place_and_show_progress_bar()
     @load_blog()
 
+  # Receives Google+ content and parse it
   load_blog: ->
     $.getJSON('https://www.googleapis.com/plus/v1/people/'+@options['user']+'/activities/public?maxResults='+@options['count']+'&key='+@options['api'], (data) =>
       @posts = data['items']
@@ -156,21 +189,22 @@ class Bfg
         @process_post(post) for post in @posts when post['provider']['title'] isnt 'Google Check-ins'
     )
 
-  # processes posts received from Google+
+  # Processes posts received from Google+
   process_post: (post) ->
     post['options'] = @options
     defined_post = new Post(post)
     defined_post.render_to(@options['dom'])
 
+  # Displays progress bar 
   place_and_show_progress_bar: ->
     $(@options['dom']).html '<div class="bfg-margin-auto"><div class="progress progress-striped active"><div class="bar" style="width: 20%;"></div></div></div>'
 
+  # Removes progressbar
   hide_div_and_prepare_container: ->
     $(@options['dom']).html ''
     $(@options['dom']).addClass 'bfg-body'
 
-  # writes object data into Chrome console
-  # this is for Chrome only, others browsers - fuck you!
+  # Writes object data into Chrome console
   d: (obj) ->
     console.log obj
 

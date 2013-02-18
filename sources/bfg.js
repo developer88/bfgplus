@@ -212,8 +212,10 @@
     };
 
     function Bfg(options) {
-      var option;
+      var option, _base, _base1;
       this.options = options;
+      (_base = this.options)['locale'] || (_base['locale'] = 'en-US');
+      (_base1 = this.options)['count'] || (_base1['count'] = 100);
       this.options['annotation_length'] = 35;
       this.processed_posts = [];
       this.posts = [];
@@ -227,10 +229,13 @@
         debug: false
       };
       $.i18n.init(option);
+    }
+
+    Bfg.prototype.initialise = function() {
       $(this.options['dom']).html('');
       this.place_and_show_progress_bar();
-      this.load_blog();
-    }
+      return this.load_blog();
+    };
 
     Bfg.prototype.load_blog = function() {
       var _this = this;
