@@ -3,6 +3,9 @@
 # v 0.0.1
 # by Eremin Andrey aka Developer, 2012-2013
 # [http://eremin.me](http://eremin.me)
+#
+# Icons by http://www.pixel-mixer.com/
+# http://www.iconfinder.com/search/?q=iconset%3Abasicset
 # 
 # The library provides an easy way to create a lightweight blog 
 # with posts of your Google+ profile.
