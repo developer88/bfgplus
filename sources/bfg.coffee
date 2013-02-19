@@ -175,7 +175,7 @@ class Bfg
     $.i18n.init option
  
   # Method to start receiving Google+ posts and render them to the page
-  initialise: ->
+  initialize: ->
     $(@options['dom']).html ''    
     @place_and_show_progress_bar()
     @load_blog()

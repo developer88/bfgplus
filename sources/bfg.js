@@ -231,7 +231,7 @@
       $.i18n.init(option);
     }
 
-    Bfg.prototype.initialise = function() {
+    Bfg.prototype.initialize = function() {
       $(this.options['dom']).html('');
       this.place_and_show_progress_bar();
       return this.load_blog();
