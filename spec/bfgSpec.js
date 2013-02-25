@@ -1,4 +1,4 @@
-describe("Initialize Bfg Plus", function() {
+xdescribe("Initialize Bfg Plus", function() {
 
   it("with appropriate parameters will not raise an error", function() {
 
@@ -15,7 +15,7 @@ describe("Initialize Bfg Plus", function() {
 });
 
 
-describe("Initialize BFG Plus with parameter", function() {
+xdescribe("Initialize BFG Plus with parameter", function() {
 
   var options = {};
 
@@ -34,6 +34,22 @@ describe("Initialize BFG Plus with parameter", function() {
 
   it("locale = 'ru-RU' will render 100 posts with Russian locale", function() {
     options['locale'] = 'ru-RU'
+
+  });
+
+});
+
+xdescribe("Post class", function() {
+
+  it("to be initialized properly when pass appropriate object", function() {
+
+  });
+
+  it("to handle wrong post type properly", function() {
+
+  });
+
+  it("to render object properly", function() {
 
   });
 
