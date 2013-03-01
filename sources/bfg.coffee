@@ -171,8 +171,7 @@ class Bfg
     @processed_posts = []
     @posts = []
     if !@options['api'] || !@options['user'] || !@options['dom']
-      @d 'Cannot load BFG+ because of wrong initial params'
-      return false 
+      throw 'Cannot load BFG+ because of wrong initial params'
 
     option = { resStore: @languages(), lng: @options['locale'], debug: false }
     $.i18n.init option
@@ -182,15 +181,21 @@ class Bfg
     $(@options['dom']).html ''    
     @place_and_show_progress_bar()
     @load_blog()
+    return true
 
   # Receives Google+ content and parse it
   load_blog: ->
     $.getJSON('https://www.googleapis.com/plus/v1/people/'+@options['user']+'/activities/public?maxResults='+@options['count']+'&key='+@options['api'], (data) =>
       @posts = data['items']
+      @d @posts
       if @posts.length > 0
         @hide_div_and_prepare_container()
         @process_post(post) for post in @posts when post['provider']['title'] isnt 'Google Check-ins'
     )
+
+  # Returns all loaded posts from Google+
+  blog_posts: ->
+    @posts
 
   # Processes posts received from Google+
   process_post: (post) ->

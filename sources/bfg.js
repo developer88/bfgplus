@@ -220,8 +220,7 @@
       this.processed_posts = [];
       this.posts = [];
       if (!this.options['api'] || !this.options['user'] || !this.options['dom']) {
-        this.d('Cannot load BFG+ because of wrong initial params');
-        return false;
+        throw 'Cannot load BFG+ because of wrong initial params';
       }
       option = {
         resStore: this.languages(),
@@ -234,7 +233,8 @@
     Bfg.prototype.initialize = function() {
       $(this.options['dom']).html('');
       this.place_and_show_progress_bar();
-      return this.load_blog();
+      this.load_blog();
+      return true;
     };
 
     Bfg.prototype.load_blog = function() {
@@ -242,6 +242,7 @@
       return $.getJSON('https://www.googleapis.com/plus/v1/people/' + this.options['user'] + '/activities/public?maxResults=' + this.options['count'] + '&key=' + this.options['api'], function(data) {
         var post, _i, _len, _ref, _results;
         _this.posts = data['items'];
+        _this.d(_this.posts);
         if (_this.posts.length > 0) {
           _this.hide_div_and_prepare_container();
           _ref = _this.posts;
@@ -255,6 +256,10 @@
           return _results;
         }
       });
+    };
+
+    Bfg.prototype.blog_posts = function() {
+      return this.posts;
     };
 
     Bfg.prototype.process_post = function(post) {
