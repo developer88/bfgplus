@@ -165,6 +165,7 @@ class Bfg
   
   # Main constructor class
   constructor: (@options) ->
+    @options ||= []
     @options['locale'] ||= 'en-US'
     @options['count'] ||= 100
     @options['annotation_length'] = 35
@@ -181,17 +182,23 @@ class Bfg
     $(@options['dom']).html ''    
     @place_and_show_progress_bar()
     @load_blog()
-    return true
 
   # Receives Google+ content and parse it
   load_blog: ->
-    $.getJSON('https://www.googleapis.com/plus/v1/people/'+@options['user']+'/activities/public?maxResults='+@options['count']+'&key='+@options['api'], (data) =>
-      @posts = data['items']
-      @d @posts
-      if @posts.length > 0
-        @hide_div_and_prepare_container()
-        @process_post(post) for post in @posts when post['provider']['title'] isnt 'Google Check-ins'
-    )
+    $.getJSON('https://www.googleapis.com/plus/v1/people/'+@options['user']+'/activities/public?maxResults='+@options['count']+'&key='+@options['api'], @load_blog_callback)
+      #(data) =>
+     # @posts = data['items']
+      #if @posts.length > 0
+      #  @hide_div_and_prepare_container()
+      #  @process_post(post) for post in @posts when post['provider']['title'] isnt 'Google Check-ins'
+    #)
+
+  load_blog_callback: (data) =>
+    @posts = data['items']
+    if @posts.length > 0
+      @hide_div_and_prepare_container()
+      @process_post(post) for post in @posts when post['provider']['title'] isnt 'Google Check-ins'
+    return true
 
   # Returns all loaded posts from Google+
   blog_posts: ->
@@ -199,6 +206,7 @@ class Bfg
 
   # Processes posts received from Google+
   process_post: (post) ->
+    return false if !post
     post['options'] = @options
     defined_post = new Post(post)
     defined_post.render_to(@options['dom'])
