@@ -14,7 +14,6 @@ Library can receives maximum 100 posts (restriction of Google+).
 *   [JQuery](http://jquery.com/)
 *   [Twitter Bootstrap](http://twitter.github.com/bootstrap/index.html)
 *   [i18next](http://i18next.com)
-
 *   [Coffescript](http://coffeescript.org/) for sources
 *   [Jasmine](http://pivotal.github.com/jasmine/) for specs
 
@@ -22,20 +21,20 @@ Library can receives maximum 100 posts (restriction of Google+).
 
 Download files and add necessary dependencies to your page:
 
-`
+```
   <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
   <link href="css/bfg.css" rel="stylesheet" media="screen">
   <script src="http://code.jquery.com/jquery-latest.js"></script>
   <script src="js/bootstrap.min.js"></script>
   <script src="js/i18next.min.js"></script>
   <script src="sources/bfg.js"></script>
-`
+```
 
 Place a container for Google+ posts like this:
 
-`
+```
   <div id="bfg-sample"></div>
-`
+```
 
 Create an API key for your Google+ account in [Google APIs](https://code.google.com/apis/console/b/0/).
 
@@ -43,7 +42,7 @@ Grap your user id from url for, for example, your Google+ Profile.
 
 Initialize Bfg+:
 
-`
+```
   <script>
     var bfg = new Bfg({
       dom:'#DOM_ID',
@@ -53,13 +52,13 @@ Initialize Bfg+:
       count:100
     });
   </script>
-`
+```
 
 Call Bfg+:
 
-`
+```
   bfg.initialize();
-`
+```
 
 ### Licence
 
