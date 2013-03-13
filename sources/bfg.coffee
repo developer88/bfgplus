@@ -186,13 +186,8 @@ class Bfg
   # Receives Google+ content and parse it
   load_blog: ->
     $.getJSON('https://www.googleapis.com/plus/v1/people/'+@options['user']+'/activities/public?maxResults='+@options['count']+'&key='+@options['api'], @load_blog_callback)
-      #(data) =>
-     # @posts = data['items']
-      #if @posts.length > 0
-      #  @hide_div_and_prepare_container()
-      #  @process_post(post) for post in @posts when post['provider']['title'] isnt 'Google Check-ins'
-    #)
 
+  # Callback for AJAX request to process data from Google+
   load_blog_callback: (data) =>
     @posts = data['items']
     if @posts.length > 0
