@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <script src="javascripts/scale.fix.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <!-- Stylesheets BFG core -->
+    <link href="css/bfg.css" rel="stylesheet" media="screen">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -30,77 +33,25 @@
 
       </header>
       <section>
-        <h1>bfg+</h1>
 
-<p>BFG + means Blog For Google +</p>
+        <div id="bfg-sample"></div>
 
-<p><img src="http://games.compulenta.ru/upload/iblock/ae7/bfg.jpg" alt="Doom BFG weapon"></p>
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/i18next.min.js"></script>
+        <!-- Javascript BFG core -->
+        <script src="js/bfg.min.js"></script>
+        <script>
+          var bfg = new Bfg({
+            dom:'#bfg-sample',
+            api:'AIzaSyCQ0r-Z6wsYLFEbCGfJEzmrMuc4fc2BWdw',
+            user:'102960425588359758591',
+            locale:'en-US',
+            count:100
+          });
+          bfg.initialize();
+        </script>
 
-<p>Small Library that receives and render public Google+ posts via official <a href="https://developers.google.com/+/api/">Google+ API</a>. </p>
-
-<p>Library can receives maximum 100 posts (restriction of Google+).</p>
-
-<h3>Dependencies</h3>
-
-<ul>
-<li>  <a href="http://jquery.com/">JQuery</a>
-</li>
-<li>  <a href="http://twitter.github.com/bootstrap/index.html">Twitter Bootstrap</a>
-</li>
-<li>  <a href="http://i18next.com">i18next</a>
-</li>
-<li>  <a href="http://coffeescript.org/">Coffescript</a> for sources</li>
-<li>  <a href="http://pivotal.github.com/jasmine/">Jasmine</a> for specs</li>
-</ul><h3>Get started</h3>
-
-<p>Download files and add necessary dependencies to your page:</p>
-
-<pre><code>  &lt;link href="css/bootstrap.min.css" rel="stylesheet" media="screen"&gt;
-  &lt;link href="css/bfg.css" rel="stylesheet" media="screen"&gt;
-  &lt;script src="http://code.jquery.com/jquery-latest.js"&gt;&lt;/script&gt;
-  &lt;script src="js/bootstrap.min.js"&gt;&lt;/script&gt;
-  &lt;script src="js/i18next.min.js"&gt;&lt;/script&gt;
-  &lt;script src="sources/bfg.js"&gt;&lt;/script&gt;
-</code></pre>
-
-<p>Place a container for Google+ posts like this:</p>
-
-<pre><code>  &lt;div id="bfg-sample"&gt;&lt;/div&gt;
-</code></pre>
-
-<p>Create an API key for your Google+ account in <a href="https://code.google.com/apis/console/b/0/">Google APIs</a>.</p>
-
-<p>Grap your user id from url for, for example, your Google+ Profile.</p>
-
-<p>Initialize Bfg+:</p>
-
-<pre><code>  &lt;script&gt;
-    var bfg = new Bfg({
-      dom:'#DOM_ID',
-      api:'API_KEY',
-      user:'GOOGLE+_USER_ID',
-      locale:'en-US',
-      count:100
-    });
-  &lt;/script&gt;
-</code></pre>
-
-<p>Call Bfg+:</p>
-
-<pre><code>  bfg.initialize();
-</code></pre>
-
-<h3>Licence</h3>
-
-<p>This code is <a href="http://www.opensource.org/licenses/mit-license.php">MIT</a> licenced:</p>
-
-<p>Copyright (c) 2012-2013 Eremin Andrey</p>
-
-<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
-
-<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
-
-<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
       </section>
       <footer>
         <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
