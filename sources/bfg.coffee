@@ -1,11 +1,9 @@
 # Blogs for Google+ (BFG)
 # ===================
 # v 1.0.0
-# by Eremin Andrey, 2012-2015
+# by Andrey Eremin, 2012-2015
 # [http://aeremin.ru](http://aeremin.ru)
 #
-# Icons by http://www.pixel-mixer.com/
-# http://www.iconfinder.com/search/?q=iconset%3Abasicset
 # 
 # The library provides an easy way to retrieve public posts from Google+
 # According to Google+ limitation BFG can only display 100 of your posts maximum.
@@ -16,15 +14,68 @@ class Post
 
   # Constructor method
   constructor: (@data) ->
-    @options = @data['options']
+    @annotation_length = 35
     @id = @data['id']
-    @attachments = if @data['object'] != undefined && @data['object']['attachments'] != undefined then @data['object']['attachments'] else []
-    @type = @determine_type()    
-    @preview = @determine_preview_background()
+    @type = @determine_type()
     @title = @determine_title()
     @annotation = @determine_annotation()
+    @attachments = @get_attachments()
+    @preview_url = @determine_preview_url()
+
+
+
+
+
+
+
+
+
     @album_content = @determine_album_content()
     @content = @determine_content()
+
+  get_attachments: ->
+    return @data['object']['attachments'] if @data['object'] != undefined && @data['object']['attachments'] != undefined
+    return []
+
+  # Finds out post's type
+  determine_type: ->
+    return @attachments[0]['objectType'] if @attachments.length > 0
+    return 'note'
+
+  # Creates title for post
+  determine_title:  ->
+    return @data['title'] if @data['title'].length > 0
+    return $.t("type."+ @type)
+
+  # Creates annotation  - short text for post's description
+  determine_annotation: ->
+    return @data['annotation'] if @data['annotation']
+    return "" if not @data['title']
+    if @title != undefined
+      return @title if @title.length <= @annotation_length
+      arr = @title.split(/\s/);
+      ret = ""
+      (ret += (if ret.length == 0 then '' else ' ') + chunk ) for chunk in arr when ret.length < @annotation_length
+      return ret + '...'
+
+  # Creates background picture for post's plate
+  determine_preview_url: ->
+    if @attachments.length > 0
+      switch @type
+        when "post"  then return @attachments[0]['image']['url']
+        when "photo" then return @attachments[0]['image']['url']
+        when "video" then return @attachments[0]['image']['url']
+        when "album" then return @attachments[0]['thumbnails'][0]['image']['url']
+        when "article" then return ''
+        when "event" then return ''
+        else return ''
+    else
+      return ''
+
+
+
+
+
 
   # Creates thumbnails for posts with album type
   determine_album_content: ->
@@ -34,16 +85,7 @@ class Post
     thumbnails += ("<li class='"+(if index == 0 then 'span4' else 'span2')+"' data-number='"+(index += 1)+"'><a href='"+thumbnail['url']+"' class='thumbnail'><img alt='' src='"+thumbnail['image']['url']+"'/></a>"+"</li>") for thumbnail in @attachments[0]['thumbnails']
     thumbnails += "</ul>"
 
-  # Creates annotation  - short text for post's description
-  determine_annotation: ->
-    return @data['annotation'] if @data['annotation']
-    return "" if not @data['title']
-    if @title != undefined
-      return @title if @title.length <= parseInt(@options['annotation_length'])
-      arr = @title.split(/\s/);
-      ret = ""
-      (ret += (if ret.length == 0 then '' else ' ') + chunk ) for chunk in arr when ret.length < @options['annotation_length']
-      return ret + '...'
+
 
   # Creates content for modal window based on post's type
   determine_content: ->
@@ -78,51 +120,16 @@ class Post
     html += "<span class='bfg-post-header'>"+@annotation+"</span>"
     html += "</div>" 
 
-  # Append post's plate and modal window html to **dom_id** object on the page
-  render_to: (dom_id) ->
-    $(dom_id).append @html()
-    $('body').append @modal()
-    @place_callbacks()
 
-  # Bind callbacks to rendered objects
-  place_callbacks: ->
-    modal_id = '#bfg-post-'+@id+'-modal'
-    plate_id = '#bfg-post-'+@id
-    carousel_id = '#bfg-post-'+@id+'-carousel'
-    $(plate_id).click =>
-      $(modal_id).modal 'show'
-    if @preview
-      $(plate_id).css('background-image', 'url(' + @preview + ')')
-      $(plate_id).css('background-position','40% 40%')
-      $(plate_id).css('background-size','250%')    
 
-  # Creates title for post
-  determine_title:  -> 
-    if @data['title'].length > 0 
-      return @data['title']
-    else
-      return $.t("type."+ @type)
 
-  # Creates background picture for post's plate
-  determine_preview_background: ->
-    if @attachments.length > 0
-      switch @type
-        when "post"  then return @attachments[0]['image']['url']
-        when "photo" then return @attachments[0]['image']['url']
-        when "video" then return @attachments[0]['image']['url']
-        when "album" then return @attachments[0]['thumbnails'][0]['image']['url']
-        when "article" then return ''
-        when "event" then return ''
-        else return ''    
-    else
-      return ''
 
-  # Finds out post's type
-  determine_type: ->
-    if @attachments.length > 0
-      return @attachments[0]['objectType']
-    else
-      'note'  
+
+
+
+
+
+
 
 # Main class for Blog for Google+
 # receives options:
@@ -134,83 +141,47 @@ class Post
 #
 # **Example:**
 # Define it like  
-# `var bfg = new Bfg({   
-#    dom:'#bfg-sample',  
+# `var bfg = new Bfg({
 #    api:'sample-api-key',  
 #    user:'sample-user-id',  
-#    locale:'en-US',  
-#    count:100  
+#    locale:'en-US'
 #  });`  
 # and then initialize blog as `bfg.initialize();`
 #
 class Bfg
-  # Array with translations. You can add as much as you like translations to this array and use it with **locale** params
-  languages: ->
-    en = { translation: { 'read_more': 'Read more', 'close':'Close', 'type':{'video':'Video', 'post':'Post', 'photo':'Photo', 'album':'Album', 'article':'Article','event':'Event'} } }
-    ru = { translation: { 'read_more': 'Подробнее', 'close':'Закрыть', 'type':{'video':'Видео', 'post':'Заметка', 'photo':'Фото', 'album':'Альбом', 'article':'Статья','event':'Событие'} } }
-    resources = {
-      dev: en,
-      en: en,            
-      'en-US': en,
-      'ru-RU': ru,
-      ru: ru
-    }
   
   # Main constructor class
   constructor: (@options) ->
+    @callback = null;
     @options ||= []
-    @options['locale'] ||= 'en-US'
-    @options['count'] ||= 100
-    @options['annotation_length'] = 35
-    @processed_posts = []
+
     @posts = []
-    if !@options['api'] || !@options['user'] || !@options['dom']
+    if !@options['api'] || !@options['user']
       throw 'Cannot load BFG+ because of wrong initial params'
 
-    option = { resStore: @languages(), lng: @options['locale'], debug: false }
-    $.i18n.init option
- 
-  # Method to start receiving Google+ posts and render them to the page
-  initialize: ->
-    $(@options['dom']).html ''    
-    @place_and_show_progress_bar()
-    @load_blog()
-
   # Receives Google+ content and parse it
-  load_blog: ->
-    $.getJSON('https://www.googleapis.com/plus/v1/people/'+@options['user']+'/activities/public?maxResults='+@options['count']+'&key='+@options['api'], @load_blog_callback)
+  get_records: (count, callback)->
+    @callback = callback
+    @processed_posts = []
+    count = parseInt(count) || 100
+    $.getJSON('https://www.googleapis.com/plus/v1/people/'+@options['user']+'/activities/public?maxResults='+@options['count']+'&key='+@options['api'], @data_loaded_callback)
 
   # Callback for AJAX request to process data from Google+
-  load_blog_callback: (data) =>
+  data_loaded_callback: (data) =>
     @posts = data['items']
     if @posts.length > 0
-      @hide_div_and_prepare_container()
-      @process_post(post) for post in @posts when post['provider']['title'] isnt 'Google Check-ins'
+      @processed_posts = (@process_post(post) for post in @posts when post['provider']['title'] isnt 'Google Check-ins')
+    @callback(@processed_posts) if isFunction(@callback)
     return true
-
-  # Returns all loaded posts from Google+
-  blog_posts: ->
-    @posts
 
   # Processes posts received from Google+
   process_post: (post) ->
     return false if !post
-    post['options'] = @options
     defined_post = new Post(post)
-    defined_post.render_to(@options['dom'])
 
-  # Displays progress bar 
-  place_and_show_progress_bar: ->
-    $(@options['dom']).html '<div class="bfg-margin-auto"><div class="progress progress-striped active"><div class="bar" style="width: 20%;"></div></div></div>'
-
-  # Removes progressbar
-  hide_div_and_prepare_container: ->
-    $(@options['dom']).html ''
-    $(@options['dom']).addClass 'bfg-body'
-
-  # Writes object data into Chrome console
-  d: (obj) ->
-    console.log obj
+  isFunction: (functionToCheck)->
+    getType = {}
+    return functionToCheck && getType.toString.call(functionToCheck) == '[object Function]'
 
 # Let's roll!
 root = exports ? this

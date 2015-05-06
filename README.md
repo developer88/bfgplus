@@ -1,4 +1,4 @@
-bfg+
+bfg+ [Working in progress. Use stabe v0.1 instead]
 =====
 
 BFG + means Blog For Google +
