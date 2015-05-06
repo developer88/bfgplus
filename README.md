@@ -5,7 +5,7 @@ BFG + means Blog For Google +
 
 ![Doom BFG weapon](http://games.compulenta.ru/upload/iblock/ae7/bfg.jpg)
 
-Small Library that receives and render public Google+ posts via official [Google+ API](https://developers.google.com/+/api/). 
+Small Library that receives public Google+ posts via official [Google+ API](https://developers.google.com/+/api/). 
 
 Library can receives maximum 100 posts (restriction of Google+).
 
@@ -64,7 +64,7 @@ Call Bfg+:
 
 This code is [MIT][mit] licenced:
 
-Copyright (c) 2012-2013 Eremin Andrey
+Copyright (c) 2012-2015 Eremin Andrey
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 

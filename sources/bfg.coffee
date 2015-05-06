@@ -1,21 +1,14 @@
-# Blog for Google+ (BFG)
+# Blogs for Google+ (BFG)
 # ===================
-# v 0.0.1
-# by Eremin Andrey aka Developer, 2012-2013
-# [http://eremin.me](http://eremin.me)
+# v 1.0.0
+# by Eremin Andrey, 2012-2015
+# [http://aeremin.ru](http://aeremin.ru)
 #
 # Icons by http://www.pixel-mixer.com/
 # http://www.iconfinder.com/search/?q=iconset%3Abasicset
 # 
-# The library provides an easy way to create a lightweight blog 
-# with posts of your Google+ profile.
+# The library provides an easy way to retrieve public posts from Google+
 # According to Google+ limitation BFG can only display 100 of your posts maximum.
-
-# **N.B.:**
-# *This is just an attempt to create a blog using Google+ as a source of content.
-# So my vision is one should not have lots of blogs (blogspot, wordpress etc. + twitter)
-# but should have only one profile in Google+ and many (if one need to do so) websites with this script.
-# But this is just a dream.*
 
 # Class for Google+ Post
 # Receives **@data** as Google+ Post Json object
