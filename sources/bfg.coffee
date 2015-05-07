@@ -101,11 +101,19 @@ class Bfg
     @callback = callback
     @processed_posts = []
     count = parseInt(count) || 100
-    $.getJSON('https://www.googleapis.com/plus/v1/people/'+@options['user']+'/activities/public?maxResults='+@options['count']+'&key='+@options['api'], @data_loaded_callback)
+    xmlhttp = getXmlHttp()
+    url = 'https://www.googleapis.com/plus/v1/people/'+@options['user']+'/activities/public?maxResults='+@options['count']+'&key='+@options['api']
+    xmlhttp.open('GET', url, true);
+    xmlhttp.onreadystatechange = ->
+      if xmlhttp.readyState == 4
+        @data_loaded_callback(xmlhttp.responseText) if xmlhttp.status == 200
+
+    xmlhttp.send(null)
 
   # Callback for AJAX request to process data from Google+
   data_loaded_callback: (data) =>
-    @posts = data['items']
+    converted_data = JSON.parse(data);
+    @posts = converted_data['items']
     if @posts.length > 0
       @processed_posts = (@process_post(post) for post in @posts when post['provider']['title'] isnt 'Google Check-ins')
     @callback(@processed_posts) if isFunction(@callback)
@@ -119,6 +127,19 @@ class Bfg
   isFunction: (functionToCheck)->
     getType = {}
     return functionToCheck && getType.toString.call(functionToCheck) == '[object Function]'
+
+  getXmlHttp: ->
+    xmlhttp = null
+    try
+     xmlhttp = new ActiveXObject("Msxml2.XMLHTTP")
+    catch e
+      try
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP")
+      catch E
+        xmlhttp = false;
+
+    xmlhttp = new XMLHttpRequest() if !xmlhttp && typeof XMLHttpRequest != 'undefined'
+    return xmlhttp
 
 # Let's roll!
 root = exports ? this
