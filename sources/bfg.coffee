@@ -101,7 +101,7 @@ class Bfg
     @callback = callback
     @processed_posts = []
     count = parseInt(count) || 100
-    xmlhttp = getXmlHttp()
+    xmlhttp = @getXmlHttp()
     url = 'https://www.googleapis.com/plus/v1/people/'+@options['user']+'/activities/public?maxResults='+@options['count']+'&key='+@options['api']
     xmlhttp.open('GET', url, true);
     xmlhttp.onreadystatechange = ->

@@ -17,12 +17,27 @@ describe("Initialize Bfg Plus", function() {
       user:'102960425588359758591'
     });
     spyOn($, "ajax").andCallThrough();
-    spyOn(bfg_bad, 'load_blog').andCallThrough(); 
-    spyOn(bfg_bad, 'load_blog_callback').andCallThrough();   
-    bfg_bad.initialize();
-    expect(bfg_bad.load_blog).toHaveBeenCalled(); 
-    expect(bfg_bad.load_blog_callback).not.toHaveBeenCalled(); 
+    spyOn(bfg_bad, 'get_records').andCallThrough();
+    spyOn(bfg_bad, 'data_loaded_callback').andCallThrough();
+    bfg_bad.get_records(1, function(){});
+    expect(bfg_bad.get_records).toHaveBeenCalled();
+    expect(bfg_bad.data_loaded_callback).not.toHaveBeenCalled();
   });
+
+  it("with appropriate parameters will get public posts", function () {
+    var bfg_good = new Bfg({
+      api:'AIzaSyCQ0r-Z6wsYLFEbCGfJEzmrMuc4fc2BWdw',
+      user:'102960425588359758591'
+    });
+    spyOn(bfg_good, 'get_records').andCallThrough();
+    spyOn(bfg_good, 'data_loaded_callback').andCallThrough();
+    var custom_function = function(data) {};
+    spyOn(custom_function).andCallThrough();
+    bfg_good.get_records(50, custom_function());
+    expect(bfg_good.get_records).toHaveBeenCalled();
+    expect(bfg_good.data_loaded_callback).toHaveBeenCalled();
+    expect(custom_function).toHaveBeenCalled();
+  })
 
 });
 

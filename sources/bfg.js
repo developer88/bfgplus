@@ -130,7 +130,7 @@
       this.callback = callback;
       this.processed_posts = [];
       count = parseInt(count) || 100;
-      xmlhttp = getXmlHttp();
+      xmlhttp = this.getXmlHttp();
       url = 'https://www.googleapis.com/plus/v1/people/' + this.options['user'] + '/activities/public?maxResults=' + this.options['count'] + '&key=' + this.options['api'];
       xmlhttp.open('GET', url, true);
       xmlhttp.onreadystatechange = function() {
