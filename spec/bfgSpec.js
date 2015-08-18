@@ -26,17 +26,25 @@ describe("Initialize Bfg Plus", function() {
 
   it("with appropriate parameters will get public posts", function () {
     var bfg_good = new Bfg({
-      api:'AIzaSyCQ0r-Z6wsYLFEbCGfJEzmrMuc4fc2BWdw',
+      api:'AIzaSyDb4QXZmhNwqgRuWjhUjwymXiXSnHS_Qso',
       user:'102960425588359758591'
     });
     spyOn(bfg_good, 'get_records').andCallThrough();
     spyOn(bfg_good, 'data_loaded_callback').andCallThrough();
     var custom_function = function(data) {};
-    spyOn(custom_function).andCallThrough();
-    bfg_good.get_records(50, custom_function());
-    expect(bfg_good.get_records).toHaveBeenCalled();
-    expect(bfg_good.data_loaded_callback).toHaveBeenCalled();
-    expect(custom_function).toHaveBeenCalled();
+    //spyOn(bfg_good, 'callback').andCallThrough();
+    runs(function() {
+      bfg_good.get_records(50, custom_function);
+    });
+    waitsFor(function(){
+      console.log(bfg_good);
+      return bfg_good.posts_loaded;
+    }, 'Posts should be loaded', 750);
+    runs(function() {
+      expect(bfg_good.get_records).toHaveBeenCalled();
+      expect(bfg_good.data_loaded_callback).toHaveBeenCalled();
+    });
+    //expect(bfg_good.callback).toHaveBeenCalled();
   })
 
 });

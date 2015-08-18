@@ -92,6 +92,9 @@ class Bfg
     @callback = null;
     @options ||= []
 
+    @posts_loaded = false
+    @post_loaded = false
+
     @posts = []
     if !@options['api'] || !@options['user']
       throw 'Cannot load BFG+ because of wrong initial params'
@@ -100,13 +103,18 @@ class Bfg
   get_records: (count, callback)->
     @callback = callback
     @processed_posts = []
+    @posts_loaded = false
     count = parseInt(count) || 100
     xmlhttp = @getXmlHttp()
-    url = 'https://www.googleapis.com/plus/v1/people/'+@options['user']+'/activities/public?maxResults='+@options['count']+'&key='+@options['api']
+    url = 'https://www.googleapis.com/plus/v1/people/'+@options['user']+'/activities/public?maxResults='+count+'&key='+@options['api']
     xmlhttp.open('GET', url, true);
     xmlhttp.onreadystatechange = ->
       if xmlhttp.readyState == 4
-        @data_loaded_callback(xmlhttp.responseText) if xmlhttp.status == 200
+        console.log(xmlhttp.readyState);
+        console.log(xmlhttp.status);
+        if xmlhttp.status == 200
+          @data_loaded_callback(xmlhttp.responseText)
+          @posts_loaded = true
 
     xmlhttp.send(null)
 

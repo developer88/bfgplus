@@ -119,6 +119,8 @@
       this.data_loaded_callback = bind(this.data_loaded_callback, this);
       this.callback = null;
       this.options || (this.options = []);
+      this.posts_loaded = false;
+      this.post_loaded = false;
       this.posts = [];
       if (!this.options['api'] || !this.options['user']) {
         throw 'Cannot load BFG+ because of wrong initial params';
@@ -129,14 +131,18 @@
       var url, xmlhttp;
       this.callback = callback;
       this.processed_posts = [];
+      this.posts_loaded = false;
       count = parseInt(count) || 100;
       xmlhttp = this.getXmlHttp();
-      url = 'https://www.googleapis.com/plus/v1/people/' + this.options['user'] + '/activities/public?maxResults=' + this.options['count'] + '&key=' + this.options['api'];
+      url = 'https://www.googleapis.com/plus/v1/people/' + this.options['user'] + '/activities/public?maxResults=' + count + '&key=' + this.options['api'];
       xmlhttp.open('GET', url, true);
       xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState === 4) {
+          console.log(xmlhttp.readyState);
+          console.log(xmlhttp.status);
           if (xmlhttp.status === 200) {
-            return this.data_loaded_callback(xmlhttp.responseText);
+            this.data_loaded_callback(xmlhttp.responseText);
+            return this.posts_loaded = true;
           }
         }
       };
